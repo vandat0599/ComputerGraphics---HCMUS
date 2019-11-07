@@ -28,6 +28,7 @@ namespace ComputerGraphicsPJ{
         private DRAW_TYPE currentDrawType = DRAW_TYPE.LINE;
         private Shape currentShape;
         private bool onPress = false;
+        private int currentMove, prevMove;
 
         public Form1(){
             InitializeComponent();
@@ -96,7 +97,9 @@ namespace ComputerGraphicsPJ{
 
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
             currentShape.setStartPoint(new Point(e.X,e.Y));
+            currentShape.setStartPoint(new Point(e.X, e.Y));
             onPress = true;
+            prevMove = currentShape.getStartPoint().X;
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {

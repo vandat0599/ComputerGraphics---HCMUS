@@ -58,6 +58,16 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
+            //gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            //gl.Color(color);
+            //gl.LineWidth(lineWidth);
+            //gl.Begin(OpenGL.);
+            
+            ////sinh tu giai thich
+            //gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - startPoint.Y);
+            //gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
+            //gl.End();
+            //gl.Flush();
             
         }
     }
@@ -85,14 +95,15 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
+            double d = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.Color(color);
             gl.LineWidth(lineWidth);
             gl.Begin(OpenGL.GL_TRIANGLES);
             //sinh tu giai thich
-            gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - startPoint.Y); // Đỉnh thứ 1 tọa độ 0,0
-            gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - endPoint.Y);  // Đỉnh thứ 2 tọa độ 100, 100
-            gl.Vertex(200, gl.RenderContextProvider.Height - startPoint.Y);   // Đỉnh thứ 3 tọa độ 200, 0
+            gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - startPoint.Y);
+            gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
+            gl.Vertex(endPoint.X - d, gl.RenderContextProvider.Height - (startPoint.Y + d*Math.Sqrt(3)/2));   
             gl.End();
             gl.Flush();
         }
