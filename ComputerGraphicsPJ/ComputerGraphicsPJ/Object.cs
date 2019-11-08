@@ -151,7 +151,7 @@ namespace Object {
             int xL = x, yL = y;
             double p2 = Math.Pow(ry, 2) * Math.Pow(xL + 1 / 2, 2) + Math.Pow(rx, 2) * Math.Pow(yL - 1, 2) - Math.Pow(rx, 2) * Math.Pow(ry, 2);
             while (y!=0) {
-                if (p2 < 0) {
+                if (p2 > 0) {
                     y = y - 1;
                     p2 = p2 - 2 * Math.Pow(rx, 2) * y + Math.Pow(rx, 2);
                 } else {
