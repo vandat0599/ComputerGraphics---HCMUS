@@ -58,7 +58,8 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
-            double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X,2) + Math.Pow(endPoint.Y - startPoint.Y,2));
+
+            double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
             double p = 5 / 4 - r;
             int x = 0, y = Convert.ToInt32(r);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
@@ -93,7 +94,6 @@ namespace Object {
 
             gl.End();
             gl.Flush();
-
             
         }
     }
@@ -121,6 +121,53 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
+            double ry = (endPoint.Y - startPoint.Y);
+            double rx = (endPoint.X - startPoint.X);
+            //r2y -r2x .ry +1⁄4.r2x
+            double p = Math.Pow(ry, 2) - Math.Pow(rx, 2) * ry + Math.Pow(rx, 2) * 1 / 4;
+            int x = 0, y = Convert.ToInt32(ry);
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.Color(color);
+            gl.LineWidth(lineWidth);
+            gl.Begin(OpenGL.GL_POINTS);
+            gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+            gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+            gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+            gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+            while (2 * Math.Pow(ry, 2) * x < 2 * Math.Pow(rx, 2) * y) {
+                if (p < 0) {
+                    p = p + 2 * Math.Pow(ry, 2) * (x + 1) + Math.Pow(ry, 2);
+                } else {
+                    p = p + 2 * Math.Pow(ry, 2) * (x + 1) - 2 * Math.Pow(rx, 2) * (y - 1) + Math.Pow(ry, 2);
+                    y = y - 1;
+                }
+                x = x + 1;
+                gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+                gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+                gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+                gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+            }
+
+            int xL = x, yL = y;
+            double p2 = Math.Pow(ry, 2) * Math.Pow(xL + 1 / 2, 2) + Math.Pow(rx, 2) * Math.Pow(yL - 1, 2) - Math.Pow(rx, 2) * Math.Pow(ry, 2);
+            while (y!=0) {
+                if (p2 < 0) {
+                    y = y - 1;
+                    p2 = p2 - 2 * Math.Pow(rx, 2) * y + Math.Pow(rx, 2);
+                } else {
+                    x = x + 1;
+                    y = y - 1;
+                    p2 = p2 + 2 * Math.Pow(ry, 2) *x - 2 * Math.Pow(rx, 2) * y + Math.Pow(rx, 2);
+                    
+                }
+                gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+                gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+                gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+                gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+            }
+
+            gl.End();
+            gl.Flush();
 
         }
     }
