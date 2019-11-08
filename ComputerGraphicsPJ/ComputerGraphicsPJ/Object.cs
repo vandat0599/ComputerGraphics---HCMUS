@@ -171,7 +171,20 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
-
+            double a = Math.Abs(endPoint.X - startPoint.X) * 2 * 2 / 4;
+            double x = Math.Sin(60 * Math.PI / 180) * a;
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.Color(color);
+            gl.LineWidth(lineWidth);
+            gl.Begin(OpenGL.GL_LINE_LOOP);
+            gl.Vertex(startPoint.X - Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - startPoint.Y);
+            gl.Vertex(startPoint.X - a / 2, gl.RenderContextProvider.Height - (startPoint.Y - x));
+            gl.Vertex(startPoint.X + a / 2, gl.RenderContextProvider.Height - (startPoint.Y - x));
+            gl.Vertex(startPoint.X + Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - startPoint.Y);
+            gl.Vertex(startPoint.X + a/2, gl.RenderContextProvider.Height - (startPoint.Y+x));
+            gl.Vertex(startPoint.X - a / 2, gl.RenderContextProvider.Height - (startPoint.Y + x));
+            gl.End();
+            gl.Flush();
         }
     }
 }
