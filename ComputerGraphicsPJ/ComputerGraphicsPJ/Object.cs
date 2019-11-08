@@ -58,16 +58,19 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
-            //gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            //gl.Color(color);
-            //gl.LineWidth(lineWidth);
-            //gl.Begin(OpenGL.);
-            
-            ////sinh tu giai thich
-            //gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - startPoint.Y);
-            //gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
-            //gl.End();
-            //gl.Flush();
+            int bY = Convert.ToInt32(endPoint.Y - Math.Abs(endPoint.X - startPoint.X) * Math.Cos(30 * Math.PI / 180));
+            int bX = Convert.ToInt32(startPoint.X + (endPoint.X - startPoint.X) * Math.Sin(30 * Math.PI / 180));
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.Color(color);
+            gl.LineWidth(lineWidth);
+            gl.Begin(OpenGL.GL_LINE_LOOP);
+            for (int i = 0; i <= 360; i++) {
+                double beta = (180 - i) / 2;
+                double cc = 2 * Math.Sin((i / 2) * Math.PI / 180) * Math.Abs(endPoint.X - startPoint.X);
+                gl.Vertex(startPoint.X - Math.Abs(endPoint.X - startPoint.X) + cc*Math.Cos(beta*Math.PI/180), gl.RenderContextProvider.Height - (endPoint.Y - cc*Math.Sin(beta*Math.PI/180)));
+            }
+            gl.End();
+            gl.Flush();
             
         }
     }
@@ -95,15 +98,15 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
-            double d = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
+            int bY = Convert.ToInt32(endPoint.Y - Math.Abs(endPoint.X - startPoint.X) * Math.Cos(30 * Math.PI / 180));
+            int bX = Convert.ToInt32(startPoint.X + (endPoint.X - startPoint.X) * Math.Sin(30 * Math.PI/180));
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.Color(color);
             gl.LineWidth(lineWidth);
-            gl.Begin(OpenGL.GL_TRIANGLES);
-            //sinh tu giai thich
-            gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - startPoint.Y);
+            gl.Begin(OpenGL.GL_LINE_LOOP);
+            gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
+            gl.Vertex(bX, gl.RenderContextProvider.Height - bY);
             gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
-            gl.Vertex(endPoint.X - d, gl.RenderContextProvider.Height - (startPoint.Y + d*Math.Sqrt(3)/2));   
             gl.End();
             gl.Flush();
         }

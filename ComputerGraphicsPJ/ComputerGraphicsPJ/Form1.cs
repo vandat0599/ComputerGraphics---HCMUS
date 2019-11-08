@@ -15,7 +15,7 @@ namespace ComputerGraphicsPJ{
     public partial class Form1 : Form{
 
         private static int BUTTON_COUNT = 7;
-        private static double PERCENT_GLHEIGHT = 0.8;
+        private static double PERCENT_GLHEIGHT = 0.9;
         enum DRAW_TYPE {
             LINE,
             CIRCLE,
@@ -60,8 +60,8 @@ namespace ComputerGraphicsPJ{
         }
         private void resizeButton(Button button, Point location) {
             button.Location = location;
-            button.Width = this.Width / 2 / BUTTON_COUNT;
-            button.Height = (this.Height - openGLControl.Height) / 2;
+            button.Width = this.Width / BUTTON_COUNT;
+            button.Height = (this.Height - openGLControl.Height);
         }
 
         private void openGLControl_OpenGLInitialized(object sender, EventArgs e) {
@@ -91,7 +91,6 @@ namespace ComputerGraphicsPJ{
         }
 
         private void openGLControl_OpenGLDraw(object sender, RenderEventArgs e) {
-            
 
         }
 
