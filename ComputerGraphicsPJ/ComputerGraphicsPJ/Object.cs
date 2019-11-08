@@ -58,19 +58,42 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
-            int bY = Convert.ToInt32(endPoint.Y - Math.Abs(endPoint.X - startPoint.X) * Math.Cos(30 * Math.PI / 180));
-            int bX = Convert.ToInt32(startPoint.X + (endPoint.X - startPoint.X) * Math.Sin(30 * Math.PI / 180));
+            double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X,2) + Math.Pow(endPoint.Y - startPoint.Y,2));
+            double p = 5 / 4 - r;
+            int x = 0, y = Convert.ToInt32(r);
             gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.Color(color);
             gl.LineWidth(lineWidth);
-            gl.Begin(OpenGL.GL_LINE_LOOP);
-            for (int i = 0; i <= 360; i++) {
-                double beta = (180 - i) / 2;
-                double cc = 2 * Math.Sin((i / 2) * Math.PI / 180) * Math.Abs(endPoint.X - startPoint.X);
-                gl.Vertex(startPoint.X - Math.Abs(endPoint.X - startPoint.X) + cc*Math.Cos(beta*Math.PI/180), gl.RenderContextProvider.Height - (endPoint.Y - cc*Math.Sin(beta*Math.PI/180)));
+            gl.Begin(OpenGL.GL_POINTS);
+            gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+            gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+            gl.Vertex(-y + startPoint.X, gl.RenderContextProvider.Height - (x + startPoint.Y));
+            gl.Vertex(-y + startPoint.X, gl.RenderContextProvider.Height - (-x + startPoint.Y));
+            gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+            gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+            gl.Vertex(y + startPoint.X, gl.RenderContextProvider.Height - (-x + startPoint.Y));
+            gl.Vertex(y + startPoint.X, gl.RenderContextProvider.Height - (x + startPoint.Y));
+            while (x < y) {
+                if (p < 0) {
+                    p = p + 2 * x + 3;
+                } else {
+                    p = p + 2 * (x - y) + 5;
+                    y = y - 1;
+                }
+                x = x + 1;
+                gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+                gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (y + startPoint.Y));
+                gl.Vertex(-y + startPoint.X, gl.RenderContextProvider.Height - (x + startPoint.Y));
+                gl.Vertex(-y + startPoint.X, gl.RenderContextProvider.Height - (-x + startPoint.Y));
+                gl.Vertex(-x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+                gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
+                gl.Vertex(y + startPoint.X, gl.RenderContextProvider.Height - (-x + startPoint.Y));
+                gl.Vertex(y + startPoint.X, gl.RenderContextProvider.Height - (x + startPoint.Y));
             }
+
             gl.End();
             gl.Flush();
+
             
         }
     }
@@ -80,7 +103,16 @@ namespace Object {
 
         public override void Draw() {
             base.Draw();
-
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.Color(color);
+            gl.LineWidth(lineWidth);
+            gl.Begin(OpenGL.GL_LINE_LOOP);
+            gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - startPoint.Y);
+            gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - startPoint.Y);
+            gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
+            gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - endPoint.Y);
+            gl.End();
+            gl.Flush();
         }
     }
 

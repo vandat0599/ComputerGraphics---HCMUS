@@ -134,6 +134,9 @@
             this.buttonEqHexagon.UseVisualStyleBackColor = true;
             this.buttonEqHexagon.Click += new System.EventHandler(this.buttonEqHexagon_Click);
             // 
+            // backgroundWorker1
+            // 
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);

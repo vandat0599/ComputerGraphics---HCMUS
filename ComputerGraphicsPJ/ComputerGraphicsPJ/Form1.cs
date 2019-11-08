@@ -120,32 +120,32 @@ namespace ComputerGraphicsPJ{
                         break;
                     }
                 case DRAW_TYPE.CIRCLE: {
-                        currentDrawType = DRAW_TYPE.LINE;
+                    currentDrawType = DRAW_TYPE.CIRCLE;
                         currentShape = new Circle(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.ELLIPSE: {
-                        currentDrawType = DRAW_TYPE.LINE;
+                        currentDrawType = DRAW_TYPE.ELLIPSE;
                         currentShape = new Ellipse(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.RECTANGLE: {
-                        currentDrawType = DRAW_TYPE.LINE;
+                        currentDrawType = DRAW_TYPE.RECTANGLE;
                         currentShape = new Object.Rectangle(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_TRIANGLE: {
-                        currentDrawType = DRAW_TYPE.LINE;
+                        currentDrawType = DRAW_TYPE.EQ_TRIANGLE;
                         currentShape = new EqTriagle(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_PENTAGON: {
-                        currentDrawType = DRAW_TYPE.LINE;
+                        currentDrawType = DRAW_TYPE.EQ_PENTAGON;
                         currentShape = new EqPentagon(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_HEXAGON: {
-                        currentDrawType = DRAW_TYPE.LINE;
+                        currentDrawType = DRAW_TYPE.EQ_HEXAGON;
                         currentShape = new EqHexagon(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
