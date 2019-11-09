@@ -46,9 +46,11 @@
             this.buttonWidth3f = new System.Windows.Forms.Button();
             this.buttonWidth1f = new System.Windows.Forms.Button();
             this.labelTime = new System.Windows.Forms.Label();
+            this.pictureBoxColorPicker = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.panelLineWidth.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColorPicker)).BeginInit();
             this.SuspendLayout();
             // 
             // eventLog1
@@ -219,11 +221,22 @@
             this.labelTime.TabIndex = 4;
             this.labelTime.Text = "NNms";
             // 
+            // pictureBoxColorPicker
+            // 
+            this.pictureBoxColorPicker.BackColor = System.Drawing.SystemColors.ControlText;
+            this.pictureBoxColorPicker.Location = new System.Drawing.Point(1362, -2);
+            this.pictureBoxColorPicker.Name = "pictureBoxColorPicker";
+            this.pictureBoxColorPicker.Size = new System.Drawing.Size(82, 75);
+            this.pictureBoxColorPicker.TabIndex = 6;
+            this.pictureBoxColorPicker.TabStop = false;
+            this.pictureBoxColorPicker.Click += new System.EventHandler(this.pictureBoxColorPicker_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2060, 752);
+            this.Controls.Add(this.pictureBoxColorPicker);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.panelLineWidth);
             this.Controls.Add(this.buttonLineWidth);
@@ -241,6 +254,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).EndInit();
             this.panelLineWidth.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColorPicker)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -266,6 +280,7 @@
         private System.Windows.Forms.Button buttonWidth1f;
         private System.Windows.Forms.Button buttonWidth8f;
         private System.Windows.Forms.Label labelTime;
+        private System.Windows.Forms.PictureBox pictureBoxColorPicker;
     }
 }
 

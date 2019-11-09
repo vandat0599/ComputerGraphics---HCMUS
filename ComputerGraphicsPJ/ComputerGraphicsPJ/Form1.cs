@@ -14,7 +14,7 @@ using Object;
 namespace ComputerGraphicsPJ{
     public partial class Form1 : Form{
 
-        private static int BUTTON_COUNT = 8;
+        private static int BUTTON_COUNT = 9;
         private static double PERCENT_GLHEIGHT = 0.8;
         enum DRAW_TYPE {
             LINE,
@@ -44,8 +44,9 @@ namespace ComputerGraphicsPJ{
         private void openGLControl_Load(object sender, EventArgs e){
             resizeUI();
             currentDrawType = DRAW_TYPE.LINE;
-            currentShape = new Line(new Point(0, 0), new Point(0, 0), openGLControl.OpenGL, new float[] { 1f, 1f, 0, 0 }, 1f);
+            currentShape = new Line(new Point(0, 0), new Point(0, 0), openGLControl.OpenGL, new float[] { 1f, 0, 0 }, 1f);
             hidePannelWidth();
+            //buttonLineWidth.Image = System.Resources.ResourceManager.GetObjet("width");
         }
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
@@ -69,6 +70,9 @@ namespace ComputerGraphicsPJ{
             resizeControHaft1(buttonEqHexagon, new Point(buttonEqPentagon.Location.X + buttonEqPentagon.Width, 0), true);
             resizeControHaft1(buttonLineWidth, new Point(buttonEqHexagon.Location.X + buttonEqHexagon.Width, 0),true);
             resizeControHaft1(panelLineWidth, new Point(buttonLineWidth.Location.X, buttonLineWidth.Height),false);
+            resizeControHaft1(pictureBoxColorPicker, new Point(buttonLineWidth.Location.X + buttonLineWidth.Width, 0), true);
+            pictureBoxColorPicker.Height = pictureBoxColorPicker.Height / 2;
+            pictureBoxColorPicker.Width = pictureBoxColorPicker.Width / 2;
 
             //button line width
             resizeControlInsidePannel(panelLineWidth, buttonWidth1f, new Point(0, 0), true, 4);
@@ -138,6 +142,9 @@ namespace ComputerGraphicsPJ{
             currentShape.setStartPoint(new Point(e.X,e.Y));
             currentShape.setStartPoint(new Point(e.X, e.Y));
             onPress = true;
+            if (panelLineWidth.Visible == true) {
+                hidePannelWidth();
+            }
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
@@ -198,7 +205,6 @@ namespace ComputerGraphicsPJ{
         //click
         private void buttonLine_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.LINE);
-            //buttonLine.BackColor = Color.FromArgb(255, 0, 0);
         }
 
         private void buttonCircle_Click(object sender, EventArgs e) {
@@ -239,13 +245,19 @@ namespace ComputerGraphicsPJ{
             }
         }
 
-        private void buttonColorPicker_Click(object sender, EventArgs e) {
-            colorDialog.ShowDialog();
+        private void buttonWidth_Click(object sender, EventArgs e) {
             hidePannelWidth();
         }
 
-        private void buttonWidth_Click(object sender, EventArgs e) {
+        private void pictureBoxColorPicker_Click(object sender, EventArgs e) {
             hidePannelWidth();
+            colorDialog.ShowDialog();
+            if (colorDialog.ShowDialog() == DialogResult.OK) {
+                pictureBoxColorPicker.BackColor = colorDialog.Color;
+                currentShape.setColor(new float[] { colorDialog.Color.R / 255f, colorDialog.Color.G / 255f, colorDialog.Color.B/255f });
+                currentShape.Draw();
+
+            } 
         }
 
 
