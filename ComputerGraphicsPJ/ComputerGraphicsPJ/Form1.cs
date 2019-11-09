@@ -14,8 +14,8 @@ using Object;
 namespace ComputerGraphicsPJ{
     public partial class Form1 : Form{
 
-        private static int BUTTON_COUNT = 7;
-        private static double PERCENT_GLHEIGHT = 0.9;
+        private static int BUTTON_COUNT = 8;
+        private static double PERCENT_GLHEIGHT = 0.8;
         enum DRAW_TYPE {
             LINE,
             CIRCLE,
@@ -25,10 +25,17 @@ namespace ComputerGraphicsPJ{
             EQ_PENTAGON,
             EQ_HEXAGON
         }
+
+        //enum LINE_WIDTH {
+        //    W_1F,
+        //    W_2F,
+        //    W_3F
+        //}
+
         private DRAW_TYPE currentDrawType = DRAW_TYPE.LINE;
         private Shape currentShape;
         private bool onPress = false;
-        private int currentMove, prevMove;
+        private int timeStart = 0, timeEnd = 0;
 
         public Form1(){
             InitializeComponent();
@@ -37,7 +44,8 @@ namespace ComputerGraphicsPJ{
         private void openGLControl_Load(object sender, EventArgs e){
             resizeUI();
             currentDrawType = DRAW_TYPE.LINE;
-            currentShape = new Line(new Point(0, 0), new Point(0, 0), openGLControl.OpenGL, new float[] { 1f, 1f, 0, 0 }, 2f);
+            currentShape = new Line(new Point(0, 0), new Point(0, 0), openGLControl.OpenGL, new float[] { 1f, 1f, 0, 0 }, 1f);
+            hidePannelWidth();
         }
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
@@ -49,19 +57,51 @@ namespace ComputerGraphicsPJ{
             openGLControl.Width = this.Width;
             openGLControl.Height = Convert.ToInt32(this.Height * PERCENT_GLHEIGHT);
 
+            labelTime.Location = openGLControl.Location;
+
             //button
-            resizeButton(buttonLine, new Point(0, 0));
-            resizeButton(buttonCircle, new Point(buttonLine.Location.X + buttonLine.Width, 0));
-            resizeButton(buttonRectangle, new Point(buttonCircle.Location.X + buttonCircle.Width, 0));
-            resizeButton(buttonEllipse, new Point(buttonRectangle.Location.X + buttonRectangle.Width, 0));
-            resizeButton(buttonEqTriangle, new Point(buttonEllipse.Location.X + buttonEllipse.Width, 0));
-            resizeButton(buttonEqPentagon, new Point(buttonEqTriangle.Location.X + buttonEqTriangle.Width, 0));
-            resizeButton(buttonEqHexagon, new Point(buttonEqPentagon.Location.X + buttonEqPentagon.Width, 0));
+            resizeControHaft1(buttonLine, new Point(0, 0),true);
+            resizeControHaft1(buttonCircle, new Point(buttonLine.Location.X + buttonLine.Width, 0), true);
+            resizeControHaft1(buttonRectangle, new Point(buttonCircle.Location.X + buttonCircle.Width, 0), true);
+            resizeControHaft1(buttonEllipse, new Point(buttonRectangle.Location.X + buttonRectangle.Width, 0), true);
+            resizeControHaft1(buttonEqTriangle, new Point(buttonEllipse.Location.X + buttonEllipse.Width, 0), true);
+            resizeControHaft1(buttonEqPentagon, new Point(buttonEqTriangle.Location.X + buttonEqTriangle.Width, 0), true);
+            resizeControHaft1(buttonEqHexagon, new Point(buttonEqPentagon.Location.X + buttonEqPentagon.Width, 0), true);
+            resizeControHaft1(buttonLineWidth, new Point(buttonEqHexagon.Location.X + buttonEqHexagon.Width, 0),true);
+            resizeControHaft1(panelLineWidth, new Point(buttonLineWidth.Location.X, buttonLineWidth.Height),false);
+
+            //button line width
+            resizeControlInsidePannel(panelLineWidth, buttonWidth1f, new Point(0, 0), true, 4);
+            resizeControlInsidePannel(panelLineWidth, buttonWidth3f, new Point(0, buttonWidth1f.Height), true, 4);
+            resizeControlInsidePannel(panelLineWidth, buttonWidth5f, new Point(0, buttonWidth3f.Location.Y + buttonWidth3f.Height), true, 4);
+            resizeControlInsidePannel(panelLineWidth, buttonWidth8f, new Point(0, buttonWidth5f.Location.Y + buttonWidth5f.Height), true, 4);
+
+            
         }
-        private void resizeButton(Button button, Point location) {
+        private void resizeControHaft1(Control button, Point location, bool autoSize) {
+            location.X = location.X - 1;
             button.Location = location;
-            button.Width = this.Width / BUTTON_COUNT;
-            button.Height = (this.Height - openGLControl.Height);
+            if (autoSize) {
+                button.Width = this.Width / BUTTON_COUNT;
+                button.Height = Convert.ToInt32((this.Height - openGLControl.Height) * 0.5);
+            }
+        }
+        private void resizeControHaft2(Control button, Point location, bool autoSize) {
+            location.X = location.X - 1 + (this.Width/2);
+            button.Location = location;
+            if (autoSize) {
+                button.Width = this.Width / BUTTON_COUNT;
+                button.Height = Convert.ToInt32((this.Height - openGLControl.Height) * 0.5);
+            }
+        }
+
+        private void resizeControlInsidePannel(Panel panel, Control control, Point location, bool autoSize, int controlCounts) {
+            //location.X = location.X + panel.Location.X;
+            control.Location = location;
+            if (autoSize) {
+                control.Width = panel.Width;
+                control.Height = panel.Height / controlCounts;
+            }
         }
 
         private void openGLControl_OpenGLInitialized(object sender, EventArgs e) {
@@ -98,13 +138,15 @@ namespace ComputerGraphicsPJ{
             currentShape.setStartPoint(new Point(e.X,e.Y));
             currentShape.setStartPoint(new Point(e.X, e.Y));
             onPress = true;
-            prevMove = currentShape.getStartPoint().X;
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
             if (onPress) {
+                timeStart = System.DateTime.Now.Millisecond;
                 currentShape.setEngPoint(new Point(e.X, e.Y));
                 currentShape.Draw();
+                timeEnd = System.DateTime.Now.Millisecond;
+                labelTime.Text = (timeEnd - timeStart) + " ms";
             }
         }
 
@@ -153,33 +195,105 @@ namespace ComputerGraphicsPJ{
             }
         }
 
+        //click
         private void buttonLine_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.LINE);
+            //buttonLine.BackColor = Color.FromArgb(255, 0, 0);
         }
 
         private void buttonCircle_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.CIRCLE);
+            hidePannelWidth();
         }
 
         private void buttonRectangle_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.RECTANGLE);
+            hidePannelWidth();
         }
 
         private void buttonEllipse_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.ELLIPSE);
+            hidePannelWidth();
         }
 
         private void buttonEqTriangle_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.EQ_TRIANGLE);
+            hidePannelWidth();
         }
 
         private void buttonEqPentagon_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.EQ_PENTAGON);
+            hidePannelWidth();
         }
 
         private void buttonEqHexagon_Click(object sender, EventArgs e) {
             createNewShapeType(DRAW_TYPE.EQ_HEXAGON);
+            hidePannelWidth();
         }
 
+        private void buttonLineWidth_Click(object sender, EventArgs e) {
+            if (panelLineWidth.Visible) {
+                hidePannelWidth();
+            } else {
+                showPannelWidth();
+            }
+        }
+
+        private void buttonColorPicker_Click(object sender, EventArgs e) {
+            colorDialog.ShowDialog();
+            hidePannelWidth();
+        }
+
+        private void buttonWidth_Click(object sender, EventArgs e) {
+            hidePannelWidth();
+        }
+
+
+        private void showPannelWidth() {
+
+            if (currentShape.getLineWidth() == 1f) {
+                buttonWidth1f.Select();
+            } else if(currentShape.getLineWidth() == 3f) {
+                buttonWidth3f.Select();
+            } else if (currentShape.getLineWidth() == 5f) {
+                buttonWidth5f.Select();
+            } else if (currentShape.getLineWidth() == 8f) {
+                buttonWidth8f.Select();
+            }
+            panelLineWidth.Visible = true;
+        }
+
+        private void hidePannelWidth(){
+            panelLineWidth.Visible = false;
+        }
+
+        private void buttonWidth1f_MouseMove(object sender, MouseEventArgs e) {
+            if (currentShape.getLineWidth() != 1f) {
+                currentShape.setLineWidth(1f);
+                currentShape.Draw();
+            }
+            
+        }
+
+        private void buttonWidth3f_MouseMove(object sender, MouseEventArgs e) {
+            if (currentShape.getLineWidth() != 3f) {
+                currentShape.setLineWidth(3f);
+                currentShape.Draw();
+            }
+        }
+
+        private void buttonWidth5f_MouseMove(object sender, MouseEventArgs e) {
+            if (currentShape.getLineWidth() != 5f) {
+                currentShape.setLineWidth(5f);
+                currentShape.Draw();
+            }
+        }
+
+        private void buttonWidth8f_MouseMove(object sender, MouseEventArgs e) {
+            if (currentShape.getLineWidth() != 8f) {
+                currentShape.setLineWidth(8f);
+                currentShape.Draw();
+            }
+        }
     }
 }
