@@ -223,7 +223,7 @@
             // 
             // pictureBoxColorPicker
             // 
-            this.pictureBoxColorPicker.BackColor = System.Drawing.SystemColors.ControlText;
+            this.pictureBoxColorPicker.BackColor = System.Drawing.Color.Red;
             this.pictureBoxColorPicker.Location = new System.Drawing.Point(1362, -2);
             this.pictureBoxColorPicker.Name = "pictureBoxColorPicker";
             this.pictureBoxColorPicker.Size = new System.Drawing.Size(82, 75);

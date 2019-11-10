@@ -47,6 +47,7 @@ namespace ComputerGraphicsPJ{
             currentShape = new Line(new Point(0, 0), new Point(0, 0), openGLControl.OpenGL, new float[] { 1f, 0, 0 }, 1f);
             hidePannelWidth();
             //buttonLineWidth.Image = System.Resources.ResourceManager.GetObjet("width");
+            openGLControl.OpenGL.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
         }
         protected override void OnResize(EventArgs e) {
             base.OnResize(e);
@@ -132,6 +133,7 @@ namespace ComputerGraphicsPJ{
             //  Load the identity.
             gl.LoadIdentity();
             gl.Ortho2D(0, openGLControl.Width, 0, openGLControl.Height);
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
         }
 
         private void openGLControl_OpenGLDraw(object sender, RenderEventArgs e) {
@@ -150,6 +152,7 @@ namespace ComputerGraphicsPJ{
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
             if (onPress) {
                 timeStart = System.DateTime.Now.Millisecond;
+                currentShape.Erase();
                 currentShape.setEngPoint(new Point(e.X, e.Y));
                 currentShape.Draw();
                 timeEnd = System.DateTime.Now.Millisecond;
@@ -281,6 +284,7 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth1f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 1f) {
+                currentShape.Erase();
                 currentShape.setLineWidth(1f);
                 currentShape.Draw();
             }
@@ -289,6 +293,7 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth3f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 3f) {
+                currentShape.Erase();
                 currentShape.setLineWidth(3f);
                 currentShape.Draw();
             }
@@ -296,6 +301,7 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth5f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 5f) {
+                currentShape.Erase();
                 currentShape.setLineWidth(5f);
                 currentShape.Draw();
             }
@@ -303,6 +309,7 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth8f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 8f) {
+                currentShape.Erase();
                 currentShape.setLineWidth(8f);
                 currentShape.Draw();
             }
