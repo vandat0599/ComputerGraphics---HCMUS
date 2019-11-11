@@ -47,6 +47,7 @@
             this.buttonWidth1f = new System.Windows.Forms.Button();
             this.labelTime = new System.Windows.Forms.Label();
             this.pictureBoxColorPicker = new System.Windows.Forms.PictureBox();
+            this.buttonPolygon = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.panelLineWidth.SuspendLayout();
@@ -147,7 +148,7 @@
             // 
             // buttonLineWidth
             // 
-            this.buttonLineWidth.Location = new System.Drawing.Point(1104, -2);
+            this.buttonLineWidth.Location = new System.Drawing.Point(1265, -1);
             this.buttonLineWidth.Name = "buttonLineWidth";
             this.buttonLineWidth.Size = new System.Drawing.Size(160, 75);
             this.buttonLineWidth.TabIndex = 2;
@@ -224,18 +225,29 @@
             // pictureBoxColorPicker
             // 
             this.pictureBoxColorPicker.BackColor = System.Drawing.Color.Red;
-            this.pictureBoxColorPicker.Location = new System.Drawing.Point(1362, -2);
+            this.pictureBoxColorPicker.Location = new System.Drawing.Point(1431, -1);
             this.pictureBoxColorPicker.Name = "pictureBoxColorPicker";
             this.pictureBoxColorPicker.Size = new System.Drawing.Size(82, 75);
             this.pictureBoxColorPicker.TabIndex = 6;
             this.pictureBoxColorPicker.TabStop = false;
             this.pictureBoxColorPicker.Click += new System.EventHandler(this.pictureBoxColorPicker_Click);
             // 
+            // buttonPolygon
+            // 
+            this.buttonPolygon.Location = new System.Drawing.Point(1101, 3);
+            this.buttonPolygon.Name = "buttonPolygon";
+            this.buttonPolygon.Size = new System.Drawing.Size(155, 75);
+            this.buttonPolygon.TabIndex = 7;
+            this.buttonPolygon.Text = "Đa giác";
+            this.buttonPolygon.UseVisualStyleBackColor = true;
+            this.buttonPolygon.Click += new System.EventHandler(this.buttonPolygon_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2060, 752);
+            this.Controls.Add(this.buttonPolygon);
             this.Controls.Add(this.pictureBoxColorPicker);
             this.Controls.Add(this.labelTime);
             this.Controls.Add(this.panelLineWidth);
@@ -281,6 +293,7 @@
         private System.Windows.Forms.Button buttonWidth8f;
         private System.Windows.Forms.Label labelTime;
         private System.Windows.Forms.PictureBox pictureBoxColorPicker;
+        private System.Windows.Forms.Button buttonPolygon;
     }
 }
 

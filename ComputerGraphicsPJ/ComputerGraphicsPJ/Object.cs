@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using SharpGL;
+using System.Collections;
 
 namespace Object {
     class Shape {
@@ -23,7 +24,7 @@ namespace Object {
         }
 
         public Point getStartPoint() { return this.startPoint; }
-        public Point getEngPoint() { return this.endPoint; }
+        public Point getEndPoint() { return this.endPoint; }
         public OpenGL getGL() { return this.gl; }
         public float[] getColor() { return this.color; }
         public float getLineWidth() { return this.lineWidth; }
@@ -31,7 +32,7 @@ namespace Object {
         public void setGL(OpenGL gl) { this.gl = gl; }
         public void setColor(float[] color) { this.color = color; }
         public void setStartPoint(Point p) { this.startPoint = p; }
-        public void setEngPoint(Point p) { this.endPoint = p; }
+        public void setEndPoint(Point p) { this.endPoint = p; }
 
         public virtual void Draw(){}
         public virtual void Erase() {
@@ -180,9 +181,6 @@ namespace Object {
                     gl.Vertex(x + startPoint.X, gl.RenderContextProvider.Height - (-y + startPoint.Y));
                 }
             }
-
-            
-
             gl.End();
             gl.Flush();
 
@@ -237,7 +235,7 @@ namespace Object {
             base.Draw();
             double a = Math.Abs(endPoint.X - startPoint.X) * 2 * 2 / 4;
             double x = Math.Sin(60 * Math.PI / 180) * a;
-            //gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.Color(color);
             gl.LineWidth(lineWidth);
             gl.Begin(OpenGL.GL_LINE_LOOP);
@@ -247,6 +245,41 @@ namespace Object {
             gl.Vertex(startPoint.X + Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - startPoint.Y);
             gl.Vertex(startPoint.X + a/2, gl.RenderContextProvider.Height - (startPoint.Y+x));
             gl.Vertex(startPoint.X - a / 2, gl.RenderContextProvider.Height - (startPoint.Y + x));
+            gl.End();
+            gl.Flush();
+        }
+    }
+    class Polygon {
+
+        private ArrayList pointArr;
+        private OpenGL gl;
+        private float[] color;
+        float lineWidth;
+
+        public Polygon(ArrayList lineArr, OpenGL gl, float[] color, float lineWidth) {
+            this.pointArr = lineArr;
+            this.gl = gl;
+            this.color = color;
+            this.lineWidth = lineWidth;
+        }
+
+        public ArrayList getPointArr() { return pointArr; }
+        public void setLineArr(ArrayList pointArr) { this.pointArr = pointArr; }
+        public void addPoint(Point point) { this.pointArr.Add(point); }
+        public void removeLastPoint() { this.pointArr.RemoveAt(pointArr.Count - 1); }
+        public OpenGL getGL(){return gl;}
+        public void setGL(OpenGL gl){this.gl = gl;}
+        public float getLineWidth(){return lineWidth;}
+        public void setLineWidth(float lineWidth) { this.lineWidth = lineWidth; }
+
+        public void Draw(){
+            gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            gl.Color(color);
+            gl.LineWidth(lineWidth);
+            gl.Begin(OpenGL.GL_LINE_LOOP);
+            foreach(Point point in pointArr){
+                gl.Vertex(point.X, gl.RenderContextProvider.Height - point.Y);
+            }
             gl.End();
             gl.Flush();
         }

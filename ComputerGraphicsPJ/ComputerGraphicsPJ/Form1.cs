@@ -10,11 +10,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using Object;
+using System.Collections;
 
 namespace ComputerGraphicsPJ{
     public partial class Form1 : Form{
 
-        private static int BUTTON_COUNT = 9;
+        private static int BUTTON_COUNT = 10;
         private static double PERCENT_GLHEIGHT = 0.8;
         enum DRAW_TYPE {
             LINE,
@@ -23,7 +24,8 @@ namespace ComputerGraphicsPJ{
             ELLIPSE,
             EQ_TRIANGLE,
             EQ_PENTAGON,
-            EQ_HEXAGON
+            EQ_HEXAGON,
+            POLYGON
         }
 
         //enum LINE_WIDTH {
@@ -34,8 +36,11 @@ namespace ComputerGraphicsPJ{
 
         private DRAW_TYPE currentDrawType = DRAW_TYPE.LINE;
         private Shape currentShape;
+        private ArrayList arrCurrentShape = new ArrayList();
         private bool onPress = false;
+        private bool onPolyDraw = false;
         private int timeStart = 0, timeEnd = 0;
+        private Polygon currentPoly;
 
         public Form1(){
             InitializeComponent();
@@ -69,7 +74,8 @@ namespace ComputerGraphicsPJ{
             resizeControHaft1(buttonEqTriangle, new Point(buttonEllipse.Location.X + buttonEllipse.Width, 0), true);
             resizeControHaft1(buttonEqPentagon, new Point(buttonEqTriangle.Location.X + buttonEqTriangle.Width, 0), true);
             resizeControHaft1(buttonEqHexagon, new Point(buttonEqPentagon.Location.X + buttonEqPentagon.Width, 0), true);
-            resizeControHaft1(buttonLineWidth, new Point(buttonEqHexagon.Location.X + buttonEqHexagon.Width, 0),true);
+            resizeControHaft1(buttonPolygon, new Point(buttonEqHexagon.Location.X + buttonEqHexagon.Width, 0),true);
+            resizeControHaft1(buttonLineWidth, new Point(buttonPolygon.Location.X + buttonPolygon.Width, 0), true);
             resizeControHaft1(panelLineWidth, new Point(buttonLineWidth.Location.X, buttonLineWidth.Height),false);
             resizeControHaft1(pictureBoxColorPicker, new Point(buttonLineWidth.Location.X + buttonLineWidth.Width, 0), true);
             pictureBoxColorPicker.Height = pictureBoxColorPicker.Height / 2;
@@ -141,67 +147,98 @@ namespace ComputerGraphicsPJ{
         }
 
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Right) {
+                currentPoly.addPoint(new Point(e.X, e.Y));
+                onPolyDraw = false;
+                return;
+            }
             currentShape.setStartPoint(new Point(e.X,e.Y));
             currentShape.setStartPoint(new Point(e.X, e.Y));
-            onPress = true;
-            if (panelLineWidth.Visible == true) {
-                hidePannelWidth();
+            if (onPolyDraw) {
+                currentPoly.addPoint(new Point(e.X, e.Y));
+            } else {
+                onPress = true;
+                if (panelLineWidth.Visible == true) {
+                    hidePannelWidth();
+                }
             }
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
-            if (onPress) {
-                timeStart = System.DateTime.Now.Millisecond;
-                currentShape.Erase();
-                currentShape.setEngPoint(new Point(e.X, e.Y));
-                currentShape.Draw();
-                timeEnd = System.DateTime.Now.Millisecond;
-                labelTime.Text = (timeEnd - timeStart) + " ms";
+
+            if (onPolyDraw) {
+                currentPoly.addPoint(new Point(e.X, e.Y));
+                currentPoly.Draw();
+                currentPoly.removeLastPoint();
+            } else {
+                if (onPress) {
+                    timeStart = System.DateTime.Now.Millisecond;
+                    //currentShape.Erase();
+                    currentShape.setEndPoint(new Point(e.X, e.Y));
+                    currentShape.Draw();
+                    //foreach (Shape s in arrCurrentShape) {
+                    //    s.Draw();
+                    //    System.Console.WriteLine("draw");
+                    //}
+                    timeEnd = System.DateTime.Now.Millisecond;
+                    labelTime.Text = (timeEnd - timeStart) + " ms";
+                }
             }
         }
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e) {
-            onPress = false;
+            if (onPolyDraw) {
+                currentPoly.addPoint(new Point(e.X, e.Y));
+                currentPoly.Draw();
+            } else {
+                onPress = false;
+            }
+            arrCurrentShape.Add(currentShape);
         }
 
         private void createNewShapeType(DRAW_TYPE type){
             switch(type){
                 case DRAW_TYPE.LINE: {
                         currentDrawType = DRAW_TYPE.LINE;
-                        currentShape = new Line(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new Line(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.CIRCLE: {
                     currentDrawType = DRAW_TYPE.CIRCLE;
-                        currentShape = new Circle(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new Circle(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.ELLIPSE: {
                         currentDrawType = DRAW_TYPE.ELLIPSE;
-                        currentShape = new Ellipse(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new Ellipse(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.RECTANGLE: {
                         currentDrawType = DRAW_TYPE.RECTANGLE;
-                        currentShape = new Object.Rectangle(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new Object.Rectangle(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_TRIANGLE: {
                         currentDrawType = DRAW_TYPE.EQ_TRIANGLE;
-                        currentShape = new EqTriagle(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new EqTriagle(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_PENTAGON: {
                         currentDrawType = DRAW_TYPE.EQ_PENTAGON;
-                        currentShape = new EqPentagon(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new EqPentagon(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_HEXAGON: {
                         currentDrawType = DRAW_TYPE.EQ_HEXAGON;
-                        currentShape = new EqHexagon(currentShape.getStartPoint(), currentShape.getEngPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentShape = new EqHexagon(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
-
+                case DRAW_TYPE.POLYGON: {
+                    currentDrawType = DRAW_TYPE.POLYGON;
+                    currentShape = new Line(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                    currentPoly = new Polygon(new ArrayList(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                    break;
+                   }
             }
         }
 
@@ -284,35 +321,61 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth1f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 1f) {
-                currentShape.Erase();
+                currentPoly.setLineWidth(1f);
                 currentShape.setLineWidth(1f);
-                currentShape.Draw();
+                if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.Draw();
+                } else {
+                    //currentShape.Erase();
+                    currentShape.Draw();
+                }
             }
             
         }
 
         private void buttonWidth3f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 3f) {
-                currentShape.Erase();
+                currentPoly.setLineWidth(3f);
                 currentShape.setLineWidth(3f);
-                currentShape.Draw();
+                if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.Draw();
+                } else {
+                    //currentShape.Erase();
+                    currentShape.Draw();
+                }
             }
         }
 
         private void buttonWidth5f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 5f) {
-                currentShape.Erase();
+                currentPoly.setLineWidth(5f);
                 currentShape.setLineWidth(5f);
-                currentShape.Draw();
+                if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.Draw();
+                } else {
+                    //currentShape.Erase();
+                    currentShape.Draw();
+                }
             }
         }
 
         private void buttonWidth8f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 8f) {
-                currentShape.Erase();
+                currentPoly.setLineWidth(8f);
                 currentShape.setLineWidth(8f);
-                currentShape.Draw();
+                if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.Draw();
+                } else {
+                    //currentShape.Erase();
+                    currentShape.Draw();
+                }
             }
+        }
+
+        private void buttonPolygon_Click(object sender, EventArgs e) {
+            createNewShapeType(DRAW_TYPE.POLYGON);
+            hidePannelWidth();
+            onPolyDraw = true;
         }
     }
 }
