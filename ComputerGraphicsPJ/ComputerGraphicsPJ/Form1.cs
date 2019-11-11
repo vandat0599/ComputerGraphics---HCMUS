@@ -78,8 +78,6 @@ namespace ComputerGraphicsPJ{
             resizeControHaft1(buttonLineWidth, new Point(buttonPolygon.Location.X + buttonPolygon.Width, 0), true);
             resizeControHaft1(panelLineWidth, new Point(buttonLineWidth.Location.X, buttonLineWidth.Height),false);
             resizeControHaft1(pictureBoxColorPicker, new Point(buttonLineWidth.Location.X + buttonLineWidth.Width, 0), true);
-            pictureBoxColorPicker.Height = pictureBoxColorPicker.Height / 2;
-            pictureBoxColorPicker.Width = pictureBoxColorPicker.Width / 2;
 
             //button line width
             resizeControlInsidePannel(panelLineWidth, buttonWidth1f, new Point(0, 0), true, 4);
@@ -165,25 +163,21 @@ namespace ComputerGraphicsPJ{
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
-
+            timeStart = System.DateTime.Now.Millisecond;
             if (onPolyDraw) {
                 currentPoly.addPoint(new Point(e.X, e.Y));
                 currentPoly.Draw();
                 currentPoly.removeLastPoint();
             } else {
                 if (onPress) {
-                    timeStart = System.DateTime.Now.Millisecond;
                     //currentShape.Erase();
                     currentShape.setEndPoint(new Point(e.X, e.Y));
                     currentShape.Draw();
-                    //foreach (Shape s in arrCurrentShape) {
-                    //    s.Draw();
-                    //    System.Console.WriteLine("draw");
-                    //}
-                    timeEnd = System.DateTime.Now.Millisecond;
-                    labelTime.Text = (timeEnd - timeStart) + " ms";
                 }
+                
             }
+            timeEnd = System.DateTime.Now.Millisecond;
+            labelTime.Text = (timeEnd - timeStart) + " ms";
         }
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e) {
@@ -321,9 +315,10 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth1f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 1f) {
-                currentPoly.setLineWidth(1f);
+                
                 currentShape.setLineWidth(1f);
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.setLineWidth(1f);
                     currentPoly.Draw();
                 } else {
                     //currentShape.Erase();
@@ -335,9 +330,10 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth3f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 3f) {
-                currentPoly.setLineWidth(3f);
+                
                 currentShape.setLineWidth(3f);
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.setLineWidth(3f);
                     currentPoly.Draw();
                 } else {
                     //currentShape.Erase();
@@ -348,9 +344,9 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth5f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 5f) {
-                currentPoly.setLineWidth(5f);
                 currentShape.setLineWidth(5f);
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.setLineWidth(5f);
                     currentPoly.Draw();
                 } else {
                     //currentShape.Erase();
@@ -361,9 +357,9 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth8f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 8f) {
-                currentPoly.setLineWidth(8f);
                 currentShape.setLineWidth(8f);
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.setLineWidth(8f);
                     currentPoly.Draw();
                 } else {
                     //currentShape.Erase();
