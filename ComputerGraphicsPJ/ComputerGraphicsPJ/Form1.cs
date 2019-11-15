@@ -146,14 +146,14 @@ namespace ComputerGraphicsPJ{
 
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Right) {
-                currentPoly.addPoint(new Point(e.X, e.Y));
+                currentPoly.addVertex(new Point(e.X, e.Y));
                 onPolyDraw = false;
                 return;
             }
             currentShape.setStartPoint(new Point(e.X,e.Y));
             currentShape.setStartPoint(new Point(e.X, e.Y));
             if (onPolyDraw) {
-                currentPoly.addPoint(new Point(e.X, e.Y));
+                currentPoly.addVertex(new Point(e.X, e.Y));
             } else {
                 onPress = true;
                 if (panelLineWidth.Visible == true) {
@@ -165,9 +165,9 @@ namespace ComputerGraphicsPJ{
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
             timeStart = System.DateTime.Now.Millisecond;
             if (onPolyDraw) {
-                currentPoly.addPoint(new Point(e.X, e.Y));
+                currentPoly.addVertex(new Point(e.X, e.Y));
                 currentPoly.Draw();
-                currentPoly.removeLastPoint();
+                currentPoly.removeLastVertex();
             } else {
                 if (onPress) {
                     //currentShape.Erase();
@@ -182,7 +182,7 @@ namespace ComputerGraphicsPJ{
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e) {
             if (onPolyDraw) {
-                currentPoly.addPoint(new Point(e.X, e.Y));
+                currentPoly.addVertex(new Point(e.X, e.Y));
                 currentPoly.Draw();
             } else {
                 onPress = false;
@@ -288,8 +288,14 @@ namespace ComputerGraphicsPJ{
             colorDialog.ShowDialog();
             if (colorDialog.ShowDialog() == DialogResult.OK) {
                 pictureBoxColorPicker.BackColor = colorDialog.Color;
-                currentShape.setColor(new float[] { colorDialog.Color.R / 255f, colorDialog.Color.G / 255f, colorDialog.Color.B/255f });
-                currentShape.Draw();
+                float[] color = new float[] { colorDialog.Color.R / 255f, colorDialog.Color.G / 255f, colorDialog.Color.B / 255f };
+                if (currentDrawType == DRAW_TYPE.POLYGON) {
+                    currentPoly.setColor(color);
+                    currentPoly.Draw();
+                } else {
+                    currentShape.setColor(color);
+                    currentShape.Draw();
+                }
 
             } 
         }
