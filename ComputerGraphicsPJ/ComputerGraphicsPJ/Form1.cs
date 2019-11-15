@@ -39,7 +39,6 @@ namespace ComputerGraphicsPJ{
         private ArrayList arrCurrentShape = new ArrayList();
         private bool onPress = false;
         private bool onPolyDraw = false;
-        private int timeStart = 0, timeEnd = 0;
         private Polygon currentPoly;
 
         public Form1(){
@@ -163,7 +162,8 @@ namespace ComputerGraphicsPJ{
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
-            timeStart = System.DateTime.Now.Millisecond;
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             if (onPolyDraw) {
                 currentPoly.addVertex(new Point(e.X, e.Y));
                 currentPoly.Draw();
@@ -174,10 +174,9 @@ namespace ComputerGraphicsPJ{
                     currentShape.setEndPoint(new Point(e.X, e.Y));
                     currentShape.Draw();
                 }
-                
             }
-            timeEnd = System.DateTime.Now.Millisecond;
-            labelTime.Text = (timeEnd - timeStart) + " ms";
+            watch.Stop();   
+            labelTime.Text = (watch.ElapsedMilliseconds) + " ms";
         }
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e) {
@@ -336,7 +335,6 @@ namespace ComputerGraphicsPJ{
 
         private void buttonWidth3f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 3f) {
-                
                 currentShape.setLineWidth(3f);
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
                     currentPoly.setLineWidth(3f);
