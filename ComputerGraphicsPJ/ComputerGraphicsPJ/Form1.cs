@@ -146,6 +146,7 @@ namespace ComputerGraphicsPJ{
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
             if (e.Button == MouseButtons.Right) {
                 currentPoly.addVertex(new Point(e.X, e.Y));
+                currentPoly.DrawControlPoint(false);
                 onPolyDraw = false;
                 return;
             }
@@ -170,9 +171,9 @@ namespace ComputerGraphicsPJ{
                 currentPoly.removeLastVertex();
             } else {
                 if (onPress) {
-                    //currentShape.Erase();
                     currentShape.setEndPoint(new Point(e.X, e.Y));
                     currentShape.Draw();
+                    
                 }
             }
             watch.Stop();   
@@ -184,6 +185,7 @@ namespace ComputerGraphicsPJ{
                 currentPoly.addVertex(new Point(e.X, e.Y));
                 currentPoly.Draw();
             } else {
+                currentShape.DrawControlPoint(false);
                 onPress = false;
             }
             arrCurrentShape.Add(currentShape);

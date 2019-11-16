@@ -15,6 +15,7 @@ namespace Object {
         protected float[] color;
         protected float lineWidth;
         protected ArrayList pointArr;
+        protected ArrayList controlPoints;
 
         public Shape(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) {
             this.startPoint = startPoint;
@@ -23,6 +24,7 @@ namespace Object {
             this.color = color;
             this.lineWidth = lineWidth;
             this.pointArr = new ArrayList();
+            controlPoints = new ArrayList();
         }
 
         public Point getStartPoint() { return this.startPoint; }
@@ -37,6 +39,9 @@ namespace Object {
         public void setEndPoint(Point p) { this.endPoint = p; }
         public ArrayList getPointArr() { return this.pointArr; }
         public void addPointArr(Point p) { this.pointArr.Add(p); }
+        public ArrayList getControlPoints() { return this.controlPoints; }
+        public void setControlPoints(ArrayList controlPoints) { this.controlPoints = controlPoints; }
+        public void addControlPoint(Point p) { this.controlPoints.Add(p); }
 
         public virtual void Draw(bool erase = true) { }
         public virtual void Erase() {
@@ -46,6 +51,33 @@ namespace Object {
             Draw();
             this.setColor(currentColor);
         }
+
+        public virtual void DrawControlPoint(bool erase = true, bool showControlPoint = true) {
+            if (erase) {
+                gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            }
+            float[] controlColor = new float[] { 1f, 1f, 1f };
+            if (!showControlPoint) {
+                controlColor = new float[] { 0f, 0f, 0f };
+            }
+            gl.Color(controlColor);
+            gl.LineWidth(lineWidth + 2);
+            
+            gl.Begin(OpenGL.GL_POINTS);
+            foreach (Point p in controlPoints) {
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X+1, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X-1, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y+1));
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y-1));
+                gl.Vertex(p.X-1, gl.RenderContextProvider.Height - (p.Y-1));
+                gl.Vertex(p.X+1, gl.RenderContextProvider.Height - (p.Y+1));
+                gl.Vertex(p.X-1, gl.RenderContextProvider.Height - (p.Y+1));
+                gl.Vertex(p.X+1, gl.RenderContextProvider.Height - (p.Y-1));
+            }
+            gl.End();
+            gl.Flush();
+        }
     }
 
     class Line: Shape {
@@ -54,6 +86,9 @@ namespace Object {
         public override void Draw(bool erase = true) {
             base.Draw();
             this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
+            this.addControlPoint(startPoint);
+            this.addControlPoint(endPoint);
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
@@ -104,12 +139,22 @@ namespace Object {
         public override void Draw(bool erase = true) {
             base.Draw();
             this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
-
+            //double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
+            double r = Math.Abs(endPoint.X - startPoint.X);
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + r), startPoint.Y));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - r), startPoint.Y));
+            this.addControlPoint(new Point(startPoint.X,Convert.ToInt32(startPoint.Y - r)));
+            this.addControlPoint(new Point(startPoint.X, Convert.ToInt32(startPoint.Y + r)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + r), Convert.ToInt32(startPoint.Y + r)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + r), Convert.ToInt32(startPoint.Y - r)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - r), Convert.ToInt32(startPoint.Y + r)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - r), Convert.ToInt32(startPoint.Y - r)));
             for (int i = 0; i < lineWidth; i++) {
-                double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2)) - i;
+                r = r - 1;
                 double p = 5 / 4 - r;
                 int x = 0, y = Convert.ToInt32(r);
 
@@ -171,6 +216,15 @@ namespace Object {
         public override void Draw(bool erase = true) {
             base.Draw();
             this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
+            this.addControlPoint(startPoint);
+            this.addControlPoint(endPoint);
+            this.addControlPoint(new Point(endPoint.X,startPoint.Y));
+            this.addControlPoint(new Point(startPoint.X, endPoint.Y));
+            this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X) / 2, startPoint.Y));
+            this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X) / 2, endPoint.Y));
+            this.addControlPoint(new Point(startPoint.X, startPoint.Y + (endPoint.Y - startPoint.Y) / 2));
+            this.addControlPoint(new Point(endPoint.X, startPoint.Y + (endPoint.Y - startPoint.Y) / 2));
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
@@ -196,13 +250,29 @@ namespace Object {
         public override void Draw(bool erase = true) {
             base.Draw();
             this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
+            double ry = Math.Abs(endPoint.Y - startPoint.Y);
+            double rx = Math.Abs(endPoint.X - startPoint.X);
+            this.addControlPoint(new Point(startPoint.X, Convert.ToInt32(startPoint.Y - ry)));
+            this.addControlPoint(new Point(startPoint.X, Convert.ToInt32(startPoint.Y + ry)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - rx), startPoint.Y));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + rx), startPoint.Y));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - rx), Convert.ToInt32(startPoint.Y - ry)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + rx), Convert.ToInt32(startPoint.Y - ry)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - rx), Convert.ToInt32(startPoint.Y + ry)));
+            this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + rx), Convert.ToInt32(startPoint.Y + ry)));
 
+
+            //this.addControlPoint(endPoint);
+            //this.addControlPoint(new Point(Convert.ToInt32(endPoint.X - 2 * rx), endPoint.Y));
+            //this.addControlPoint(new Point(Convert.ToInt32(endPoint.X - 2 * rx), Convert.ToInt32(endPoint.Y - 2 * ry)));
+            //this.addControlPoint(new Point(endPoint.X, Convert.ToInt32(endPoint.Y - 2 * ry)));
             for (int i = 0; i < lineWidth; i++) {
-                double ry = Math.Abs(endPoint.Y - startPoint.Y) - i;
-                double rx = Math.Abs(endPoint.X - startPoint.X) - i;
+                ry = ry - 1;
+                rx = rx - 1;
                 //r2y -r2x .ry +1⁄4.r2x
                 double p = Math.Pow(ry, 2) - Math.Pow(rx, 2) * ry + Math.Pow(rx, 2) * 1 / 4;
                 int x = 0, y = Convert.ToInt32(ry);
@@ -268,11 +338,20 @@ namespace Object {
         public override void Draw(bool erase = true) {
             base.Draw();
             this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
             int bY = Convert.ToInt32(endPoint.Y - Math.Abs(endPoint.X - startPoint.X) * Math.Cos(30 * Math.PI / 180));
             int bX = Convert.ToInt32(startPoint.X + (endPoint.X - startPoint.X) * Math.Sin(30 * Math.PI / 180));
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
+            this.addControlPoint(new Point(startPoint.X, endPoint.Y));
+            this.addControlPoint(new Point(bX, bY));
+            this.addControlPoint(new Point(endPoint.X, endPoint.Y));
+            this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X)/2,endPoint.Y));
+            this.addControlPoint(new Point(startPoint.X, bY));
+            this.addControlPoint(new Point(endPoint.X, bY));
+            this.addControlPoint(new Point(startPoint.X, endPoint.Y - (endPoint.Y - bY) / 2));
+            this.addControlPoint(new Point(endPoint.X, endPoint.Y - (endPoint.Y - bY) / 2));
             Line l1 = new Line(new Point(startPoint.X, endPoint.Y), new Point(bX, bY), gl, color, lineWidth);
             Line l2 = new Line(new Point(bX, bY), new Point(endPoint.X, endPoint.Y), gl, color, lineWidth);
             Line l3 = new Line(new Point(endPoint.X, endPoint.Y), new Point(startPoint.X, endPoint.Y), gl, color, lineWidth);
@@ -291,35 +370,34 @@ namespace Object {
 
         public override void Draw(bool erase = true) {
             base.Draw();
+            this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
             double a = Math.Abs(endPoint.X - startPoint.X)*2*3/5;
             double R = a /(2*Math.Sin(36*Math.PI/180));
             double x = Math.Sin(72 * Math.PI / 180) * a;
-            //gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            //gl.Color(color);
-            //gl.LineWidth(lineWidth);
-            //gl.Begin(OpenGL.GL_LINE_LOOP);
-            //gl.Vertex(startPoint.X, gl.RenderContextProvider.Height - (endPoint.Y - x - Math.Abs(endPoint.X - startPoint.X)*Math.Sin(36*Math.PI/180)));
-            //gl.Vertex(startPoint.X + Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - (endPoint.Y - x));
-            //gl.Vertex(startPoint.X + a/2, gl.RenderContextProvider.Height - endPoint.Y);
-            //gl.Vertex(startPoint.X - a/2, gl.RenderContextProvider.Height - endPoint.Y);
-            //gl.Vertex(startPoint.X - Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - (endPoint.Y - x));
-            //gl.End();
-            //gl.Flush();
-
-
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
-            Point p1 = new Point(startPoint.X, Convert.ToInt32(endPoint.Y - x - Math.Abs(endPoint.X - startPoint.X) * Math.Sin(36 * Math.PI / 180)));
+            Point pTop = new Point(startPoint.X, Convert.ToInt32(endPoint.Y - x - Math.Abs(endPoint.X - startPoint.X) * Math.Sin(36 * Math.PI / 180)));
             Point p2 = new Point(startPoint.X + Math.Abs(endPoint.X - startPoint.X), Convert.ToInt32(endPoint.Y - x));
             Point p3 = new Point(Convert.ToInt32(startPoint.X + a / 2), endPoint.Y);
             Point p4 = new Point(Convert.ToInt32(startPoint.X - a / 2), endPoint.Y);
             Point p5 = new Point(Convert.ToInt32(startPoint.X - Math.Abs(endPoint.X - startPoint.X)),Convert.ToInt32(endPoint.Y - x));
-            Line l1 = new Line(p1,p2, gl, color, lineWidth);
+
+            this.addControlPoint(pTop);
+            this.addControlPoint(new Point(pTop.X, endPoint.Y));
+            this.addControlPoint(new Point(pTop.X - (endPoint.X - pTop.X), pTop.Y + (endPoint.Y - pTop.Y) / 2));
+            this.addControlPoint(new Point(pTop.X + (endPoint.X - pTop.X), pTop.Y + (endPoint.Y - pTop.Y) / 2));
+            this.addControlPoint(new Point(endPoint.X, pTop.Y));
+            this.addControlPoint(endPoint);
+            this.addControlPoint(new Point(pTop.X - (endPoint.X - pTop.X), endPoint.Y));
+            this.addControlPoint(new Point(pTop.X - (endPoint.X - pTop.X), pTop.Y));
+
+            Line l1 = new Line(pTop, p2, gl, color, lineWidth);
             Line l2 = new Line(p2,p3, gl, color, lineWidth);
             Line l3 = new Line(p3,p4, gl, color, lineWidth);
             Line l4 = new Line(p4,p5, gl, color, lineWidth);
-            Line l5 = new Line(p5,p1, gl, color, lineWidth);
+            Line l5 = new Line(p5, pTop, gl, color, lineWidth);
             l1.Draw(false);
             l2.Draw(false);
             l3.Draw(false);
@@ -338,36 +416,36 @@ namespace Object {
 
         public override void Draw(bool erase = true) {
             base.Draw();
+            this.pointArr = new ArrayList();
+            this.controlPoints = new ArrayList();
             double a = Math.Abs(endPoint.X - startPoint.X) * 2 * 2 / 4;
             double x = Math.Sin(60 * Math.PI / 180) * a;
-            //gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
-            //gl.Color(color);
-            //gl.LineWidth(lineWidth);
-            //gl.Begin(OpenGL.GL_LINE_LOOP);
-            //gl.Vertex(startPoint.X - Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - startPoint.Y);
-            //gl.Vertex(startPoint.X - a / 2, gl.RenderContextProvider.Height - (startPoint.Y - x));
-            //gl.Vertex(startPoint.X + a / 2, gl.RenderContextProvider.Height - (startPoint.Y - x));
-            //gl.Vertex(startPoint.X + Math.Abs(endPoint.X - startPoint.X), gl.RenderContextProvider.Height - startPoint.Y);
-            //gl.Vertex(startPoint.X + a / 2, gl.RenderContextProvider.Height - (startPoint.Y + x));
-            //gl.Vertex(startPoint.X - a / 2, gl.RenderContextProvider.Height - (startPoint.Y + x));
-            //gl.End();
-            //gl.Flush();
-
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             }
-            Point p1 = new Point(startPoint.X - Math.Abs(endPoint.X - startPoint.X), startPoint.Y);
+
+            Point pLeft = new Point(startPoint.X - Math.Abs(endPoint.X - startPoint.X), startPoint.Y);
             Point p2 = new Point(Convert.ToInt32(startPoint.X - a / 2), Convert.ToInt32(startPoint.Y - x));
             Point p3 = new Point(Convert.ToInt32(startPoint.X + a / 2), Convert.ToInt32(startPoint.Y - x));
-            Point p4 = new Point(startPoint.X + Math.Abs(endPoint.X - startPoint.X), startPoint.Y);
+            Point pRight = new Point(startPoint.X + Math.Abs(endPoint.X - startPoint.X), startPoint.Y);
             Point p5 = new Point(Convert.ToInt32(startPoint.X + a / 2), Convert.ToInt32(startPoint.Y + x));
             Point p6 = new Point(Convert.ToInt32(startPoint.X - a / 2), Convert.ToInt32(startPoint.Y + x));
-            Line l1 = new Line(p1, p2, gl, color, lineWidth);
+            Point pTop = new Point(p2.X + Convert.ToInt32((p3.X - p2.X) / 2), p2.Y);
+            Point pBottom = new Point(p6.X + Convert.ToInt32((p5.X - p6.X) / 2), p6.Y);
+            this.addControlPoint(pTop);
+            this.addControlPoint(pBottom);
+            this.addControlPoint(pLeft);
+            this.addControlPoint(pRight);
+            this.addControlPoint(new Point(pLeft.X, pTop.Y));
+            this.addControlPoint(new Point(pLeft.X, pBottom.Y));
+            this.addControlPoint(new Point(pRight.X, pTop.Y));
+            this.addControlPoint(new Point(pRight.X, pBottom.Y));
+            Line l1 = new Line(pLeft, p2, gl, color, lineWidth);
             Line l2 = new Line(p2, p3, gl, color, lineWidth);
-            Line l3 = new Line(p3, p4, gl, color, lineWidth);
-            Line l4 = new Line(p4, p5, gl, color, lineWidth);
+            Line l3 = new Line(p3, pRight, gl, color, lineWidth);
+            Line l4 = new Line(pRight, p5, gl, color, lineWidth);
             Line l5 = new Line(p5, p6, gl, color, lineWidth);
-            Line l6 = new Line(p6, p1, gl, color, lineWidth);
+            Line l6 = new Line(p6, pLeft, gl, color, lineWidth);
             l1.Draw(false);
             l2.Draw(false);
             l3.Draw(false);
@@ -382,6 +460,7 @@ namespace Object {
             this.pointArr.Add(l6.getPointArr());
         }
     }
+
     class Polygon {
 
         private ArrayList vertexArr;
@@ -430,6 +509,33 @@ namespace Object {
                 Line lineLast = new Line(ps[ps.Length - 1], ps[0], gl, color, lineWidth);
                 lineLast.Draw(false);
                 this.pointArr.Add(lineLast.getPointArr());
+            }
+            gl.End();
+            gl.Flush();
+        }
+
+        public void DrawControlPoint(bool erase = true, bool showControlPoint = true) {
+            if (erase) {
+                gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
+            }
+            float[] controlColor = new float[] { 1f, 1f, 1f };
+            if (!showControlPoint) {
+                controlColor = new float[] { 0f, 0f, 0f };
+            }
+            gl.Color(controlColor);
+            gl.LineWidth(lineWidth + 2);
+
+            gl.Begin(OpenGL.GL_POINTS);
+            foreach (Point p in vertexArr) {
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y + 1));
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y - 1));
+                gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y - 1));
+                gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y + 1));
+                gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y + 1));
+                gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y - 1));
             }
             gl.End();
             gl.Flush();
