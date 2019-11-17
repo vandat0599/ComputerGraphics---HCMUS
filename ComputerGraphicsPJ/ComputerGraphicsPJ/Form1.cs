@@ -28,11 +28,10 @@ namespace ComputerGraphicsPJ{
             POLYGON
         }
 
-        //enum LINE_WIDTH {
-        //    W_1F,
-        //    W_2F,
-        //    W_3F
-        //}
+        enum MOUSE_MODE {
+            DRAW,
+            DRAG
+        }
 
         private DRAW_TYPE currentDrawType = DRAW_TYPE.LINE;
         private Shape currentShape;
@@ -40,6 +39,7 @@ namespace ComputerGraphicsPJ{
         private bool onPress = false;
         private bool onPolyDraw = false;
         private Polygon currentPoly;
+        private MOUSE_MODE currentMouseMode = MOUSE_MODE.DRAW;
 
         public Form1(){
             InitializeComponent();
@@ -84,6 +84,12 @@ namespace ComputerGraphicsPJ{
             resizeControlInsidePannel(panelLineWidth, buttonWidth5f, new Point(0, buttonWidth3f.Location.Y + buttonWidth3f.Height), true, 4);
             resizeControlInsidePannel(panelLineWidth, buttonWidth8f, new Point(0, buttonWidth5f.Location.Y + buttonWidth5f.Height), true, 4);
 
+            buttonDraw.Location = new Point(0, Convert.ToInt32(this.Height * 0.1));
+            buttonDraw.Width = 2 * buttonLine.Width;
+            buttonDraw.Height = Convert.ToInt32(this.Height * 0.1);
+            buttonDrag.Location = new Point(buttonDraw.Location.X + buttonDraw.Width, buttonDraw.Location.Y);
+            buttonDrag.Height = buttonDraw.Height;
+            buttonDrag.Width = buttonDraw.Width;
             
         }
         private void resizeControHaft1(Control button, Point location, bool autoSize) {
@@ -144,51 +150,97 @@ namespace ComputerGraphicsPJ{
         }
 
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
-            if (e.Button == MouseButtons.Right) {
-                currentPoly.addVertex(new Point(e.X, e.Y));
-                currentPoly.DrawControlPoint(false);
-                onPolyDraw = false;
-                return;
+
+            switch (currentMouseMode) {
+                case MOUSE_MODE.DRAW: {
+                        if (e.Button == MouseButtons.Right) {
+                            currentPoly.addVertex(new Point(e.X, e.Y));
+                            onPolyDraw = false;
+                            return;
+                        }
+                        currentShape.setStartPoint(new Point(e.X, e.Y));
+                        currentShape.setStartPoint(new Point(e.X, e.Y));
+                        if (onPolyDraw) {
+                            currentPoly.addVertex(new Point(e.X, e.Y));
+                        } else {
+                            onPress = true;
+                            if (panelLineWidth.Visible == true) {
+                                hidePannelWidth();
+                            }
+                        }
+                        break;
+                    }
+                case MOUSE_MODE.DRAG: {
+                    if (currentDrawType == DRAW_TYPE.POLYGON) {
+                        Point[] pointArr = new Point[currentPoly.getPointArr().Count];
+                        currentPoly.getPointArr().CopyTo(pointArr);
+                        if (IsInPolygon(pointArr, new Point(e.X, e.Y))) {
+                            currentPoly.DrawControlPoint(false, true);
+                        } else {
+                            currentPoly.DrawControlPoint(false, false);
+                        }
+                    } else {
+                        Point[] pointArr = new Point[currentShape.getPointArr().Count];
+                        currentShape.getPointArr().CopyTo(pointArr);
+                        if (IsInPolygon(pointArr, new Point(e.X, e.Y))) {
+                            currentShape.DrawControlPoint(false, true);
+                        } else {
+                            currentShape.DrawControlPoint(false, false);
+                        }
+                    }
+                    break;
+                    }
             }
-            currentShape.setStartPoint(new Point(e.X,e.Y));
-            currentShape.setStartPoint(new Point(e.X, e.Y));
-            if (onPolyDraw) {
-                currentPoly.addVertex(new Point(e.X, e.Y));
-            } else {
-                onPress = true;
-                if (panelLineWidth.Visible == true) {
-                    hidePannelWidth();
-                }
-            }
+
+            
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-            if (onPolyDraw) {
-                currentPoly.addVertex(new Point(e.X, e.Y));
-                currentPoly.Draw();
-                currentPoly.removeLastVertex();
-            } else {
-                if (onPress) {
-                    currentShape.setEndPoint(new Point(e.X, e.Y));
-                    currentShape.Draw();
-                    
-                }
+            switch (currentMouseMode) {
+                case MOUSE_MODE.DRAW: {
+                        var watch = new System.Diagnostics.Stopwatch();
+                        watch.Start();
+                        if (onPolyDraw) {
+                            currentPoly.addVertex(new Point(e.X, e.Y));
+                            currentPoly.Draw();
+                            currentPoly.removeLastVertex();
+                        } else {
+                            if (onPress) {
+                                currentShape.setEndPoint(new Point(e.X, e.Y));
+                                currentShape.Draw();
+
+                            }
+                        }
+                        watch.Stop();
+                        labelTime.Text = (watch.ElapsedMilliseconds) + " ms";
+                    break;
+                    }
+                case MOUSE_MODE.DRAG: {
+                    break;
+                    }
             }
-            watch.Stop();   
-            labelTime.Text = (watch.ElapsedMilliseconds) + " ms";
+
+            
         }
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e) {
-            if (onPolyDraw) {
-                currentPoly.addVertex(new Point(e.X, e.Y));
-                currentPoly.Draw();
-            } else {
-                currentShape.DrawControlPoint(false);
-                onPress = false;
+            switch (currentMouseMode) {
+                case MOUSE_MODE.DRAW: {
+                        if (onPolyDraw) {
+                            currentPoly.addVertex(new Point(e.X, e.Y));
+                            currentPoly.Draw();
+                        } else {
+                            //currentShape.DrawControlPoint(false);
+                            onPress = false;
+                        }
+                        arrCurrentShape.Add(currentShape);
+                    break;
+                    }
+                case MOUSE_MODE.DRAG: {
+                    break;
+                    }
             }
-            arrCurrentShape.Add(currentShape);
+            
         }
 
         private void createNewShapeType(DRAW_TYPE type){
@@ -379,5 +431,41 @@ namespace ComputerGraphicsPJ{
             hidePannelWidth();
             onPolyDraw = true;
         }
+
+        private void buttonDraw_Click(object sender, EventArgs e) {
+            currentMouseMode = MOUSE_MODE.DRAW;
+            if (currentDrawType == DRAW_TYPE.POLYGON) {
+                currentPoly.DrawControlPoint(false, false);
+            } else {
+                currentShape.DrawControlPoint(false, false);
+            }
+            
+        }
+
+        private void buttonDrag_Click(object sender, EventArgs e) {
+            currentMouseMode = MOUSE_MODE.DRAG;
+            if (currentDrawType == DRAW_TYPE.POLYGON) {
+                currentPoly.DrawControlPoint(false, true);
+            } else {
+                currentShape.DrawControlPoint(false, true);
+            }
+            
+        }
+
+        public bool IsInPolygon(Point[] polygon, Point testPoint) {
+            bool result = false;
+            int j = polygon.Count() - 1;
+            for (int i = 0; i < polygon.Count(); i++) {
+                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y) {
+                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X) {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
+        }
+
     }
+
 }

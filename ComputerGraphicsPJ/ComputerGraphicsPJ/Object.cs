@@ -77,6 +77,9 @@ namespace Object {
             }
             gl.End();
             gl.Flush();
+            if (!showControlPoint) {
+                this.Draw();
+            }
         }
     }
 
@@ -130,6 +133,7 @@ namespace Object {
             gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - (endPoint.Y));
             gl.End();
             gl.Flush();
+            //System.Console.WriteLine(this.pointArr.Count);
         }
     }
 
@@ -237,10 +241,10 @@ namespace Object {
             l3.Draw(false);
             l3.Draw(false);
             l4.Draw(false);
-            this.pointArr.Add(l1.getPointArr());
-            this.pointArr.Add(l2.getPointArr());
-            this.pointArr.Add(l3.getPointArr());
-            this.pointArr.Add(l4.getPointArr());
+            this.pointArr.AddRange(l1.getPointArr());
+            this.pointArr.AddRange(l2.getPointArr());
+            this.pointArr.AddRange(l3.getPointArr());
+            this.pointArr.AddRange(l4.getPointArr());
         }
     }
 
@@ -358,9 +362,9 @@ namespace Object {
             l1.Draw(false);
             l2.Draw(false);
             l3.Draw(false);
-            this.pointArr.Add(l1.getPointArr());
-            this.pointArr.Add(l2.getPointArr());
-            this.pointArr.Add(l3.getPointArr());
+            this.pointArr.AddRange(l1.getPointArr());
+            this.pointArr.AddRange(l2.getPointArr());
+            this.pointArr.AddRange(l3.getPointArr());
 
         }
     }
@@ -403,11 +407,11 @@ namespace Object {
             l3.Draw(false);
             l4.Draw(false);
             l5.Draw(false);
-            this.pointArr.Add(l1.getPointArr());
-            this.pointArr.Add(l2.getPointArr());
-            this.pointArr.Add(l3.getPointArr());
-            this.pointArr.Add(l4.getPointArr());
-            this.pointArr.Add(l5.getPointArr());
+            this.pointArr.AddRange(l1.getPointArr());
+            this.pointArr.AddRange(l2.getPointArr());
+            this.pointArr.AddRange(l3.getPointArr());
+            this.pointArr.AddRange(l4.getPointArr());
+            this.pointArr.AddRange(l5.getPointArr());
         }
     }
 
@@ -452,12 +456,12 @@ namespace Object {
             l4.Draw(false);
             l5.Draw(false);
             l6.Draw(false);
-            this.pointArr.Add(l1.getPointArr());
-            this.pointArr.Add(l2.getPointArr());
-            this.pointArr.Add(l3.getPointArr());
-            this.pointArr.Add(l4.getPointArr());
-            this.pointArr.Add(l5.getPointArr());
-            this.pointArr.Add(l6.getPointArr());
+            this.pointArr.AddRange(l1.getPointArr());
+            this.pointArr.AddRange(l2.getPointArr());
+            this.pointArr.AddRange(l3.getPointArr());
+            this.pointArr.AddRange(l4.getPointArr());
+            this.pointArr.AddRange(l5.getPointArr());
+            this.pointArr.AddRange(l6.getPointArr());
         }
     }
 
@@ -504,11 +508,11 @@ namespace Object {
                 for (int i = 0; i < ps.Length - 1; i++) {
                     Line l = new Line(ps[i], ps[i + 1], gl, color, lineWidth);
                     l.Draw(false);
-                    this.pointArr.Add(l.getPointArr());
+                    this.pointArr.AddRange(l.getPointArr());
                 }
                 Line lineLast = new Line(ps[ps.Length - 1], ps[0], gl, color, lineWidth);
                 lineLast.Draw(false);
-                this.pointArr.Add(lineLast.getPointArr());
+                this.pointArr.AddRange(lineLast.getPointArr());
             }
             gl.End();
             gl.Flush();
@@ -539,6 +543,9 @@ namespace Object {
             }
             gl.End();
             gl.Flush();
+            if (!showControlPoint) {
+                this.Draw();
+            }
         }
     }
 }

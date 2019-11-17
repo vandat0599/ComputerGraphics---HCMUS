@@ -48,6 +48,8 @@
             this.labelTime = new System.Windows.Forms.Label();
             this.pictureBoxColorPicker = new System.Windows.Forms.PictureBox();
             this.buttonPolygon = new System.Windows.Forms.Button();
+            this.buttonDraw = new System.Windows.Forms.Button();
+            this.buttonDrag = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.panelLineWidth.SuspendLayout();
@@ -242,11 +244,33 @@
             this.buttonPolygon.UseVisualStyleBackColor = true;
             this.buttonPolygon.Click += new System.EventHandler(this.buttonPolygon_Click);
             // 
+            // buttonDraw
+            // 
+            this.buttonDraw.Location = new System.Drawing.Point(12, 76);
+            this.buttonDraw.Name = "buttonDraw";
+            this.buttonDraw.Size = new System.Drawing.Size(248, 76);
+            this.buttonDraw.TabIndex = 8;
+            this.buttonDraw.Text = "DRAW_MODE";
+            this.buttonDraw.UseVisualStyleBackColor = true;
+            this.buttonDraw.Click += new System.EventHandler(this.buttonDraw_Click);
+            // 
+            // buttonDrag
+            // 
+            this.buttonDrag.Location = new System.Drawing.Point(266, 76);
+            this.buttonDrag.Name = "buttonDrag";
+            this.buttonDrag.Size = new System.Drawing.Size(248, 76);
+            this.buttonDrag.TabIndex = 8;
+            this.buttonDrag.Text = "DRAG_MODE";
+            this.buttonDrag.UseVisualStyleBackColor = true;
+            this.buttonDrag.Click += new System.EventHandler(this.buttonDrag_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2060, 752);
+            this.Controls.Add(this.buttonDrag);
+            this.Controls.Add(this.buttonDraw);
             this.Controls.Add(this.buttonPolygon);
             this.Controls.Add(this.pictureBoxColorPicker);
             this.Controls.Add(this.labelTime);
@@ -294,6 +318,8 @@
         private System.Windows.Forms.Label labelTime;
         private System.Windows.Forms.PictureBox pictureBoxColorPicker;
         private System.Windows.Forms.Button buttonPolygon;
+        private System.Windows.Forms.Button buttonDrag;
+        private System.Windows.Forms.Button buttonDraw;
     }
 }
 
