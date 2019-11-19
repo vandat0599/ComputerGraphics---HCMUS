@@ -173,16 +173,14 @@ namespace ComputerGraphicsPJ{
                 case MOUSE_MODE.DRAG: {
                     if (currentDrawType == DRAW_TYPE.POLYGON) {
                         Point[] pointArr = new Point[currentPoly.getPointArr().Count];
-                        currentPoly.getPointArr().CopyTo(pointArr);
-                        if (IsInPolygon(pointArr, new Point(e.X, e.Y))) {
+                        if (currentPoly.havePointInside(new Point(e.X, e.Y))) {
                             currentPoly.DrawControlPoint(false, true);
                         } else {
                             currentPoly.DrawControlPoint(false, false);
                         }
                     } else {
                         Point[] pointArr = new Point[currentShape.getPointArr().Count];
-                        currentShape.getPointArr().CopyTo(pointArr);
-                        if (IsInPolygon(pointArr, new Point(e.X, e.Y))) {
+                        if (currentShape.havePointInside(new Point(e.X, e.Y))) {
                             currentShape.DrawControlPoint(false, true);
                         } else {
                             currentShape.DrawControlPoint(false, false);
@@ -450,20 +448,6 @@ namespace ComputerGraphicsPJ{
                 currentShape.DrawControlPoint(false, true);
             }
             
-        }
-
-        public bool IsInPolygon(Point[] polygon, Point testPoint) {
-            bool result = false;
-            int j = polygon.Count() - 1;
-            for (int i = 0; i < polygon.Count(); i++) {
-                if (polygon[i].Y < testPoint.Y && polygon[j].Y >= testPoint.Y || polygon[j].Y < testPoint.Y && polygon[i].Y >= testPoint.Y) {
-                    if (polygon[i].X + (testPoint.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < testPoint.X) {
-                        result = !result;
-                    }
-                }
-                j = i;
-            }
-            return result;
         }
 
     }
