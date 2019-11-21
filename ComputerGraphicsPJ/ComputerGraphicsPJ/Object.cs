@@ -50,7 +50,28 @@ namespace Object {
         public void addControlPoint(Point p) { this.controlPoints.Add(p); }
         public ArrayList getVertexs() { return this.vertexs; }
         public void addVertexs(Point p) { this.vertexs.Add(p); }
+        public bool isControlPointsContaint(Point p) {
+            Point p1 = new Point(p.X, p.Y);
+            Point p2 = new Point(p.X + 1, p.Y);
+            Point p3 = new Point(p.X - 1, p.Y);
+            Point p4 = new Point(p.X, p.Y + 1);
+            Point p5 = new Point(p.X, p.Y - 1);
+            Point p6 = new Point(p.X - 1, p.Y - 1);
+            Point p7 = new Point(p.X + 1, p.Y + 1);
+            Point p8 = new Point(p.X - 1, p.Y + 1);
+            Point p9 = new Point(p.X + 1, p.Y - 1);
+            return this.controlPoints.Contains(p1) 
+                || this.controlPoints.Contains(p2) 
+                || this.controlPoints.Contains(p3) 
+                || this.controlPoints.Contains(p4)
+                || this.controlPoints.Contains(p5)
+                || this.controlPoints.Contains(p6) 
+                || this.controlPoints.Contains(p7) 
+                || this.controlPoints.Contains(p8)
+                || this.controlPoints.Contains(p9);
+        }
 
+        public virtual Point getCenterPoint() { return new Point(Convert.ToInt32((endPoint.X + startPoint.X) / 2), Convert.ToInt32((endPoint.Y + startPoint.Y) / 2)); }
         public virtual void Draw(bool erase = true) { }
         public virtual void Erase() {
             float[] currentColor = this.getColor();
@@ -88,7 +109,6 @@ namespace Object {
                 this.Draw();
             }
         }
-
         public virtual bool havePointInside(Point point) {
             //if (this.pointArr.Contains(point)) {
             //    return true;
@@ -250,6 +270,10 @@ namespace Object {
             gl.End();
             gl.Flush();
         }
+
+        public override Point getCenterPoint() {
+            return this.startPoint;
+        }
     }
 
     class Rectangle: Shape {
@@ -383,6 +407,12 @@ namespace Object {
             gl.Flush();
 
         }
+
+        public override Point getCenterPoint() {
+            return this.startPoint;
+        }
+
+
     }
 
     class EqTriagle: Shape {
@@ -421,6 +451,12 @@ namespace Object {
             this.pointArr.AddRange(l2.getPointArr());
             this.pointArr.AddRange(l3.getPointArr());
 
+        }
+
+        public override Point getCenterPoint() {
+            int bY = Convert.ToInt32(endPoint.Y - Math.Abs(endPoint.X - startPoint.X) * Math.Cos(30 * Math.PI / 180));
+            int bX = Convert.ToInt32(startPoint.X + (endPoint.X - startPoint.X) * Math.Sin(30 * Math.PI / 180));
+            return new Point(bX, (bY + endPoint.Y) / 2);
         }
     }
 
@@ -473,6 +509,14 @@ namespace Object {
             this.pointArr.AddRange(l3.getPointArr());
             this.pointArr.AddRange(l4.getPointArr());
             this.pointArr.AddRange(l5.getPointArr());
+        }
+
+        public override Point getCenterPoint() {
+            double a = Math.Abs(endPoint.X - startPoint.X)*2*3/5;
+            double R = a /(2*Math.Sin(36*Math.PI/180));
+            double x = Math.Sin(72 * Math.PI / 180) * a;
+            Point pTop = new Point(startPoint.X, Convert.ToInt32(endPoint.Y - x - Math.Abs(endPoint.X - startPoint.X) * Math.Sin(36 * Math.PI / 180)));
+            return new Point(pTop.X,(pTop.Y + endPoint.Y)/2);
         }
     }
 
@@ -534,6 +578,10 @@ namespace Object {
             this.pointArr.AddRange(l4.getPointArr());
             this.pointArr.AddRange(l5.getPointArr());
             this.pointArr.AddRange(l6.getPointArr());
+        }
+
+        public override Point getCenterPoint() {
+            return this.startPoint;
         }
     }
 

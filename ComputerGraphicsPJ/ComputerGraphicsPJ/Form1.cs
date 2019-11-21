@@ -40,6 +40,7 @@ namespace ComputerGraphicsPJ{
         private bool onPolyDraw = false;
         private Polygon currentPoly;
         private MOUSE_MODE currentMouseMode = MOUSE_MODE.DRAW;
+        private bool isShowingControlPoints = false;
 
         public Form1(){
             InitializeComponent();
@@ -150,10 +151,11 @@ namespace ComputerGraphicsPJ{
         }
 
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
-
             switch (currentMouseMode) {
                 case MOUSE_MODE.DRAW: {
+                    setDrawCursor();
                         if (e.Button == MouseButtons.Right) {
+                            setDefaultCursor();
                             currentPoly.addVertex(new Point(e.X, e.Y));
                             onPolyDraw = false;
                             return;
@@ -175,15 +177,19 @@ namespace ComputerGraphicsPJ{
                         Point[] pointArr = new Point[currentPoly.getPointArr().Count];
                         if (currentPoly.havePointInside(new Point(e.X, e.Y))) {
                             currentPoly.DrawControlPoint(false, true);
+                            isShowingControlPoints = true;
                         } else {
                             currentPoly.DrawControlPoint(false, false);
+                            isShowingControlPoints = false;
                         }
                     } else {
                         Point[] pointArr = new Point[currentShape.getPointArr().Count];
                         if (currentShape.havePointInside(new Point(e.X, e.Y))) {
                             currentShape.DrawControlPoint(false, true);
+                            isShowingControlPoints = true;
                         } else {
                             currentShape.DrawControlPoint(false, false);
+                            isShowingControlPoints = false;
                         }
                     }
                     break;
@@ -214,6 +220,26 @@ namespace ComputerGraphicsPJ{
                     break;
                     }
                 case MOUSE_MODE.DRAG: {
+                    if (isShowingControlPoints) {
+                        Point mP = new Point(e.X, e.Y);
+                        if (currentShape.isControlPointsContaint(mP)) {
+                            Point centerPointShape = currentShape.getCenterPoint();
+                            if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
+                                setVerticalCursor();
+                            } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
+                                setHorizontalCursor();
+                            } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
+                                || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
+                                    setSizeTopRightCursor();
+                            } else {
+                                setSizeTopLeftCursor();
+                            }
+                            //System.Console.WriteLine("mpX: " + mP.X + " mpY: " + mP.Y);
+                            //System.Console.WriteLine("cX: " + centerPointShape.X + " cY: " + centerPointShape.Y);
+                        } else {
+                            setDefaultCursor();
+                        }
+                    }
                     break;
                     }
             }
@@ -229,6 +255,7 @@ namespace ComputerGraphicsPJ{
                             currentPoly.Draw();
                         } else {
                             //currentShape.DrawControlPoint(false);
+                            setDefaultCursor();
                             onPress = false;
                         }
                         arrCurrentShape.Add(currentShape);
@@ -442,6 +469,7 @@ namespace ComputerGraphicsPJ{
 
         private void buttonDrag_Click(object sender, EventArgs e) {
             currentMouseMode = MOUSE_MODE.DRAG;
+            isShowingControlPoints = true;
             if (currentDrawType == DRAW_TYPE.POLYGON) {
                 currentPoly.DrawControlPoint(false, true);
             } else {
@@ -450,6 +478,29 @@ namespace ComputerGraphicsPJ{
             
         }
 
+        private void setDefaultCursor() {
+            openGLControl.Cursor = Cursors.Default;
+        }
+
+        private void setDrawCursor() {
+            openGLControl.Cursor = Cursors.Cross;
+        }
+
+        private void setSizeTopRightCursor() {
+            openGLControl.Cursor = Cursors.SizeNESW;
+        }
+
+        private void setSizeTopLeftCursor() {
+            openGLControl.Cursor = Cursors.SizeNWSE;
+        }
+
+        private void setVerticalCursor() {
+            openGLControl.Cursor = Cursors.SizeNS;
+        }
+
+        private void setHorizontalCursor() {
+            openGLControl.Cursor = Cursors.SizeWE;
+        }
     }
 
 }
