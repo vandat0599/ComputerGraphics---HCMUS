@@ -41,6 +41,9 @@ namespace ComputerGraphicsPJ{
         private Polygon currentPoly;
         private MOUSE_MODE currentMouseMode = MOUSE_MODE.DRAW;
         private bool isShowingControlPoints = false;
+        private Point startMovePoint = new Point(0, 0);
+        private Point endMovePoint = new Point(0, 0);
+        private bool onPressMove = false;
 
         public Form1(){
             InitializeComponent();
@@ -173,6 +176,7 @@ namespace ComputerGraphicsPJ{
                         break;
                     }
                 case MOUSE_MODE.DRAG: {
+
                     if (currentDrawType == DRAW_TYPE.POLYGON) {
                         Point[] pointArr = new Point[currentPoly.getPointArr().Count];
                         if (currentPoly.havePointInLines(new Point(e.X, e.Y))) {
@@ -184,7 +188,15 @@ namespace ComputerGraphicsPJ{
                         }
                     } else {
                         Point[] pointArr = new Point[currentShape.getPointArr().Count];
-                        if (currentShape.havePointInLines(new Point(e.X, e.Y))) {
+                        Point pDown = new Point(e.X, e.Y);
+                        if (isShowingControlPoints) {
+                            if (currentShape.havePointInside(pDown)) {
+                                onPressMove = true;
+                                startMovePoint = new Point(e.X, e.Y);
+                                break;
+                            }
+                        }
+                        if (currentShape.havePointInLines(pDown)) {
                             currentShape.DrawControlPoint(false, true);
                             isShowingControlPoints = true;
                         } else {
@@ -222,24 +234,49 @@ namespace ComputerGraphicsPJ{
                 case MOUSE_MODE.DRAG: {
                     if (isShowingControlPoints) {
                         Point mP = new Point(e.X, e.Y);
-                        
-                        if (currentShape.havePointInside(mP)) {
-                            setAllSizeCursor();
-                        } else {
-                            if (currentShape.isControlPointsContaint(mP)) {
-                                Point centerPointShape = currentShape.getCenterPoint();
-                                if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
-                                    setVerticalCursor();
-                                } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
-                                    setHorizontalCursor();
-                                } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
-                                    || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
-                                    setSizeTopRightCursor();
-                                } else {
-                                    setSizeTopLeftCursor();
-                                }
+                        if (currentDrawType == DRAW_TYPE.POLYGON) {
+                            if (currentPoly.havePointInside(mP)) {
+                                setAllSizeCursor();
                             } else {
-                                setDefaultCursor();
+                                if (currentPoly.isControlPointsContaint(mP)) {
+                                    Point centerPointShape = currentPoly.getCenterPoint();
+                                    if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
+                                        setVerticalCursor();
+                                    } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
+                                        setHorizontalCursor();
+                                    } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
+                                        || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
+                                        setSizeTopRightCursor();
+                                    } else {
+                                        setSizeTopLeftCursor();
+                                    }
+                                } else {
+                                    setDefaultCursor();
+                                }
+                            }
+                        } else {
+                            if (currentShape.havePointInside(mP)) {
+                                setAllSizeCursor();
+                            } else {
+                                if (currentShape.isControlPointsContaint(mP)) {
+                                    Point centerPointShape = currentShape.getCenterPoint();
+                                    if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
+                                        setVerticalCursor();
+                                    } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
+                                        setHorizontalCursor();
+                                    } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
+                                        || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
+                                        setSizeTopRightCursor();
+                                    } else {
+                                        setSizeTopLeftCursor();
+                                    }
+                                } else {
+                                    setDefaultCursor();
+                                }
+                            }
+                            if (onPressMove) {
+                                endMovePoint = new Point(e.X, e.Y);
+                                currentShape.onMove(startMovePoint, endMovePoint);
                             }
                         }
                     } else {
@@ -248,8 +285,6 @@ namespace ComputerGraphicsPJ{
                     break;
                     }
             }
-
-            
         }
 
         private void openGLControl_MouseUp(object sender, MouseEventArgs e) {
@@ -267,6 +302,17 @@ namespace ComputerGraphicsPJ{
                     break;
                     }
                 case MOUSE_MODE.DRAG: {
+                    onPressMove = false;
+                    //if (isShowingControlPoints) {
+                    //    currentShape.setStartPoint(
+                    //        new Point(
+                    //            currentShape.getStartPoint().X + (endMovePoint.X - startMovePoint.X),
+                    //            currentShape.getStartPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+                    //    currentShape.setEndPoint(
+                    //       new Point(
+                    //           currentShape.getEndPoint().X + (endMovePoint.X - startMovePoint.X),
+                    //           currentShape.getEndPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+                    //}
                     break;
                     }
             }
@@ -368,8 +414,8 @@ namespace ComputerGraphicsPJ{
 
         private void pictureBoxColorPicker_Click(object sender, EventArgs e) {
             hidePannelWidth();
-            colorDialog.ShowDialog();
-            if (colorDialog.ShowDialog() == DialogResult.OK) {
+            DialogResult dialogResult = colorDialog.ShowDialog();
+            if (dialogResult == DialogResult.OK) {
                 pictureBoxColorPicker.BackColor = colorDialog.Color;
                 float[] color = new float[] { colorDialog.Color.R / 255f, colorDialog.Color.G / 255f, colorDialog.Color.B / 255f };
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
@@ -382,7 +428,6 @@ namespace ComputerGraphicsPJ{
 
             } 
         }
-
 
         private void showPannelWidth() {
 

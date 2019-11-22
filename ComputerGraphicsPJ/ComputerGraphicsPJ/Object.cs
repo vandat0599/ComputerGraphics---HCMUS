@@ -138,6 +138,21 @@ namespace Object {
             }
             return result;
         }
+
+        public virtual void onMove(Point start, Point end) {
+            Point v = new Point(end.X - start.X, end.Y - start.Y);
+            this.startPoint.X += v.X;
+            this.startPoint.Y += v.Y; 
+            this.endPoint.X += v.X;
+            this.endPoint.Y += v.Y;
+            this.Draw(true);
+            this.DrawControlPoint(false, true);
+            this.startPoint.X -= v.X;
+            this.startPoint.Y -= v.Y;
+            this.endPoint.X -= v.X;
+            this.endPoint.Y -= v.Y;
+
+        }
     }
 
     class Line: Shape {
@@ -193,7 +208,6 @@ namespace Object {
             gl.Vertex(endPoint.X, gl.RenderContextProvider.Height - (endPoint.Y));
             gl.End();
             gl.Flush();
-            //System.Console.WriteLine(this.pointArr.Count);
         }
     }
 
@@ -609,7 +623,6 @@ namespace Object {
     }
 
     class Polygon {
-
         private ArrayList vertexs;
         private ArrayList pointArr;
         private OpenGL gl;
@@ -684,6 +697,7 @@ namespace Object {
                 gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y + 1));
                 gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y - 1));
             }
+            //draw centerPoint
             Point centerPoint = getCenterPoint();
             gl.Vertex(centerPoint.X, gl.RenderContextProvider.Height - (centerPoint.Y));
             gl.End();
@@ -779,6 +793,27 @@ namespace Object {
 
             // Return the result.
             return area;
+        }
+
+        public bool isControlPointsContaint(Point p) {
+            Point p1 = new Point(p.X, p.Y);
+            Point p2 = new Point(p.X + 1, p.Y);
+            Point p3 = new Point(p.X - 1, p.Y);
+            Point p4 = new Point(p.X, p.Y + 1);
+            Point p5 = new Point(p.X, p.Y - 1);
+            Point p6 = new Point(p.X - 1, p.Y - 1);
+            Point p7 = new Point(p.X + 1, p.Y + 1);
+            Point p8 = new Point(p.X - 1, p.Y + 1);
+            Point p9 = new Point(p.X + 1, p.Y - 1);
+            return this.vertexs.Contains(p1)
+                || this.vertexs.Contains(p2)
+                || this.vertexs.Contains(p3)
+                || this.vertexs.Contains(p4)
+                || this.vertexs.Contains(p5)
+                || this.vertexs.Contains(p6)
+                || this.vertexs.Contains(p7)
+                || this.vertexs.Contains(p8)
+                || this.vertexs.Contains(p9);
         }
     }
 }
