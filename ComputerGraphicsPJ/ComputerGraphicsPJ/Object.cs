@@ -109,23 +109,7 @@ namespace Object {
                 this.Draw();
             }
         }
-        public virtual bool havePointInside(Point point) {
-            //if (this.pointArr.Contains(point)) {
-            //    return true;
-            //}
-            //bool result = false;
-            //Point[] polygon = new Point[this.pointArr.Count];
-            //this.pointArr.CopyTo(polygon);
-            //int j = polygon.Count() - 1;
-            //for (int i = 0; i < polygon.Count(); i++) {
-            //    if (polygon[i].Y < point.Y && polygon[j].Y >= point.Y || polygon[j].Y < point.Y && polygon[i].Y >= point.Y) {
-            //        if (polygon[i].X + (point.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < point.X) {
-            //            result = !result;
-            //        }
-            //    }
-            //    j = i;
-            //}
-            //return result;
+        public virtual bool havePointInLines(Point point) {
             double dMin = Double.MaxValue;
             foreach (Point p in pointArr) {
                 double d = Math.Sqrt(Math.Pow(point.X - p.X, 2) + Math.Pow(point.Y - p.Y, 2));
@@ -134,7 +118,25 @@ namespace Object {
                 }
             }
             return dMin <= Constant.EPSILON;
+        }
 
+        public virtual bool havePointInside(Point point) {
+            if (this.pointArr.Contains(point)) {
+                return true;
+            }
+            bool result = false;
+            Point[] polygon = new Point[this.pointArr.Count];
+            this.pointArr.CopyTo(polygon);
+            int j = polygon.Count() - 1;
+            for (int i = 0; i < polygon.Count(); i++) {
+                if (polygon[i].Y < point.Y && polygon[j].Y >= point.Y || polygon[j].Y < point.Y && polygon[i].Y >= point.Y) {
+                    if (polygon[i].X + (point.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < point.X) {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
         }
     }
 
@@ -274,6 +276,16 @@ namespace Object {
         public override Point getCenterPoint() {
             return this.startPoint;
         }
+
+        public override bool havePointInside(Point point) {
+            if (this.pointArr.Contains(point)) {
+                return true;
+            }
+            double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
+            double d = Math.Sqrt(Math.Pow(point.X - startPoint.X, 2) + Math.Pow(point.Y - startPoint.Y, 2));
+            
+            return d <= r;
+        }
     }
 
     class Rectangle: Shape {
@@ -410,6 +422,17 @@ namespace Object {
 
         public override Point getCenterPoint() {
             return this.startPoint;
+        }
+
+        public override bool havePointInside(Point point) {
+            if (this.pointArr.Contains(point)) {
+                return true;
+            }
+            double ry = Math.Abs(endPoint.Y - startPoint.Y);
+            double rx = Math.Abs(endPoint.X - startPoint.X);
+            double e1 = Math.Pow(point.X - startPoint.X, 2) / Math.Pow(rx, 2);
+            double e2 = Math.Pow(point.Y - startPoint.Y, 2) / Math.Pow(ry, 2);
+            return e1 + e2 <= 1f;
         }
 
 
@@ -668,23 +691,7 @@ namespace Object {
             }
         }
 
-        public bool havePointInside(Point point) {
-            //if (this.pointArr.Contains(point)) {
-            //    return true;
-            //}
-            //bool result = false;
-            //Point[] polygon = new Point[this.pointArr.Count];
-            //this.pointArr.CopyTo(polygon);
-            //int j = polygon.Count() - 1;
-            //for (int i = 0; i < polygon.Count(); i++) {
-            //    if (polygon[i].Y < point.Y && polygon[j].Y >= point.Y || polygon[j].Y < point.Y && polygon[i].Y >= point.Y) {
-            //        if (polygon[i].X + (point.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < point.X) {
-            //            result = !result;
-            //        }
-            //    }
-            //    j = i;
-            //}
-            //return result;
+        public bool havePointInLines(Point point) {
             double dMin = Double.MaxValue;
             foreach (Point p in pointArr) {
                 double d = Math.Sqrt(Math.Pow(point.X - p.X, 2) + Math.Pow(point.Y - p.Y, 2));
@@ -693,6 +700,25 @@ namespace Object {
                 }
             }
             return dMin <= Constant.EPSILON;
+        }
+
+        public bool havePointInside(Point point) {
+            if (this.pointArr.Contains(point)) {
+                return true;
+            }
+            bool result = false;
+            Point[] polygon = new Point[this.pointArr.Count];
+            this.pointArr.CopyTo(polygon);
+            int j = polygon.Count() - 1;
+            for (int i = 0; i < polygon.Count(); i++) {
+                if (polygon[i].Y < point.Y && polygon[j].Y >= point.Y || polygon[j].Y < point.Y && polygon[i].Y >= point.Y) {
+                    if (polygon[i].X + (point.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) * (polygon[j].X - polygon[i].X) < point.X) {
+                        result = !result;
+                    }
+                }
+                j = i;
+            }
+            return result;
         }
     }
 }

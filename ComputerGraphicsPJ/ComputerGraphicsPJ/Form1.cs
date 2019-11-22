@@ -175,7 +175,7 @@ namespace ComputerGraphicsPJ{
                 case MOUSE_MODE.DRAG: {
                     if (currentDrawType == DRAW_TYPE.POLYGON) {
                         Point[] pointArr = new Point[currentPoly.getPointArr().Count];
-                        if (currentPoly.havePointInside(new Point(e.X, e.Y))) {
+                        if (currentPoly.havePointInLines(new Point(e.X, e.Y))) {
                             currentPoly.DrawControlPoint(false, true);
                             isShowingControlPoints = true;
                         } else {
@@ -184,7 +184,7 @@ namespace ComputerGraphicsPJ{
                         }
                     } else {
                         Point[] pointArr = new Point[currentShape.getPointArr().Count];
-                        if (currentShape.havePointInside(new Point(e.X, e.Y))) {
+                        if (currentShape.havePointInLines(new Point(e.X, e.Y))) {
                             currentShape.DrawControlPoint(false, true);
                             isShowingControlPoints = true;
                         } else {
@@ -222,23 +222,28 @@ namespace ComputerGraphicsPJ{
                 case MOUSE_MODE.DRAG: {
                     if (isShowingControlPoints) {
                         Point mP = new Point(e.X, e.Y);
-                        if (currentShape.isControlPointsContaint(mP)) {
-                            Point centerPointShape = currentShape.getCenterPoint();
-                            if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
-                                setVerticalCursor();
-                            } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
-                                setHorizontalCursor();
-                            } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
-                                || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
-                                    setSizeTopRightCursor();
-                            } else {
-                                setSizeTopLeftCursor();
-                            }
-                            //System.Console.WriteLine("mpX: " + mP.X + " mpY: " + mP.Y);
-                            //System.Console.WriteLine("cX: " + centerPointShape.X + " cY: " + centerPointShape.Y);
+                        
+                        if (currentShape.havePointInside(mP)) {
+                            setAllSizeCursor();
                         } else {
-                            setDefaultCursor();
+                            if (currentShape.isControlPointsContaint(mP)) {
+                                Point centerPointShape = currentShape.getCenterPoint();
+                                if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
+                                    setVerticalCursor();
+                                } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
+                                    setHorizontalCursor();
+                                } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
+                                    || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
+                                    setSizeTopRightCursor();
+                                } else {
+                                    setSizeTopLeftCursor();
+                                }
+                            } else {
+                                setDefaultCursor();
+                            }
                         }
+                    } else {
+                        setDefaultCursor();
                     }
                     break;
                     }
@@ -500,6 +505,10 @@ namespace ComputerGraphicsPJ{
 
         private void setHorizontalCursor() {
             openGLControl.Cursor = Cursors.SizeWE;
+        }
+
+        private void setAllSizeCursor() {
+            openGLControl.Cursor = Cursors.SizeAll;
         }
     }
 
