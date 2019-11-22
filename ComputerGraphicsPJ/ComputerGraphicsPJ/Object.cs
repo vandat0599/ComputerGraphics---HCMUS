@@ -684,6 +684,8 @@ namespace Object {
                 gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y + 1));
                 gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y - 1));
             }
+            Point centerPoint = getCenterPoint();
+            gl.Vertex(centerPoint.X, gl.RenderContextProvider.Height - (centerPoint.Y));
             gl.End();
             gl.Flush();
             if (!showControlPoint) {
@@ -719,6 +721,64 @@ namespace Object {
                 j = i;
             }
             return result;
+        }
+
+        public Point getCenterPoint() {
+            int num_points = this.vertexs.Count;
+            Point[] pts = new Point[num_points + 1];
+            this.vertexs.CopyTo(pts, 0);
+            pts[num_points] = pts[0];
+            // Find the centroid.
+            float X = 0;
+            float Y = 0;
+            float second_factor;
+            for (int i = 0; i < num_points; i++) {
+                second_factor =
+                    pts[i].X * pts[i + 1].Y -
+                    pts[i + 1].X * pts[i].Y;
+                X += (pts[i].X + pts[i + 1].X) * second_factor;
+                Y += (pts[i].Y + pts[i + 1].Y) * second_factor;
+            }
+
+            // Divide by 6 times the polygon's area.
+            float polygon_area = PolygonArea();
+            X /= (6 * polygon_area);
+            Y /= (6 * polygon_area);
+
+            // If the values are negative, the polygon is
+            // oriented counterclockwise so reverse the signs.
+            if (X < 0) {
+                X = -X;
+                Y = -Y;
+            }
+
+            return new Point(Convert.ToInt32(X), Convert.ToInt32(Y));
+        }
+
+        private float PolygonArea() {
+            // Return the absolute value of the signed area.
+            // The signed area is negative if the polyogn is
+            // oriented clockwise.
+            return Math.Abs(SignedPolygonArea());
+        }
+
+        private float SignedPolygonArea() {
+            // Add the first point to the end.
+            int num_points = this.vertexs.Count;
+            Point[] pts = new Point[num_points + 1];
+            this.vertexs.CopyTo(pts, 0);
+            pts[num_points] = pts[0];
+
+            // Get the areas.
+            float area = 0;
+            for (int i = 0; i < num_points; i++) {
+                area +=
+                    (pts[i + 1].X - pts[i].X) *
+                    (pts[i + 1].Y + pts[i].Y) / 2;
+            }
+
+            // Return the result.
+            return area;
         }
     }
 }
