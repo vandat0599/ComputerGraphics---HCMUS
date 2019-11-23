@@ -11,9 +11,10 @@ using System.Windows.Forms;
 using System.Drawing;
 using Object;
 using System.Collections;
+using System.Threading;
 
-namespace ComputerGraphicsPJ{
-    public partial class Form1 : Form{
+namespace ComputerGraphicsPJ {
+    public partial class Form1 : Form {
 
         private static int BUTTON_COUNT = 10;
         private static double PERCENT_GLHEIGHT = 0.8;
@@ -25,7 +26,9 @@ namespace ComputerGraphicsPJ{
             EQ_TRIANGLE,
             EQ_PENTAGON,
             EQ_HEXAGON,
-            POLYGON
+            POLYGON,
+            SCANLINE,
+            FLOODFILL
         }
 
         enum MOUSE_MODE {
@@ -44,12 +47,17 @@ namespace ComputerGraphicsPJ{
         private Point startMovePoint = new Point(0, 0);
         private Point endMovePoint = new Point(0, 0);
         private bool onPressMove = false;
+        // ADD
+        private Scanline currentScanline;       // add vào cuối
+        private Floodfill currentFloodfill;     // add vào cuối
+        bool PolyDrawed = false;                // add vào hàm createNewShapeType
+        Color BoxIn;                            // add vào cuối
 
-        public Form1(){
+        public Form1() {
             InitializeComponent();
         }
 
-        private void openGLControl_Load(object sender, EventArgs e){
+        private void openGLControl_Load(object sender, EventArgs e) {
             resizeUI();
             currentDrawType = DRAW_TYPE.LINE;
             currentShape = new Line(new Point(0, 0), new Point(0, 0), openGLControl.OpenGL, new float[] { 1f, 0, 0 }, 1f);
@@ -70,16 +78,16 @@ namespace ComputerGraphicsPJ{
             labelTime.Location = openGLControl.Location;
 
             //button
-            resizeControHaft1(buttonLine, new Point(0, 0),true);
+            resizeControHaft1(buttonLine, new Point(0, 0), true);
             resizeControHaft1(buttonCircle, new Point(buttonLine.Location.X + buttonLine.Width, 0), true);
             resizeControHaft1(buttonRectangle, new Point(buttonCircle.Location.X + buttonCircle.Width, 0), true);
             resizeControHaft1(buttonEllipse, new Point(buttonRectangle.Location.X + buttonRectangle.Width, 0), true);
             resizeControHaft1(buttonEqTriangle, new Point(buttonEllipse.Location.X + buttonEllipse.Width, 0), true);
             resizeControHaft1(buttonEqPentagon, new Point(buttonEqTriangle.Location.X + buttonEqTriangle.Width, 0), true);
             resizeControHaft1(buttonEqHexagon, new Point(buttonEqPentagon.Location.X + buttonEqPentagon.Width, 0), true);
-            resizeControHaft1(buttonPolygon, new Point(buttonEqHexagon.Location.X + buttonEqHexagon.Width, 0),true);
+            resizeControHaft1(buttonPolygon, new Point(buttonEqHexagon.Location.X + buttonEqHexagon.Width, 0), true);
             resizeControHaft1(buttonLineWidth, new Point(buttonPolygon.Location.X + buttonPolygon.Width, 0), true);
-            resizeControHaft1(panelLineWidth, new Point(buttonLineWidth.Location.X, buttonLineWidth.Height),false);
+            resizeControHaft1(panelLineWidth, new Point(buttonLineWidth.Location.X, buttonLineWidth.Height), false);
             resizeControHaft1(pictureBoxColorPicker, new Point(buttonLineWidth.Location.X + buttonLineWidth.Width, 0), true);
 
             //button line width
@@ -94,7 +102,17 @@ namespace ComputerGraphicsPJ{
             buttonDrag.Location = new Point(buttonDraw.Location.X + buttonDraw.Width, buttonDraw.Location.Y);
             buttonDrag.Height = buttonDraw.Height;
             buttonDrag.Width = buttonDraw.Width;
+            buttonSCANLINE.Location = new Point(buttonDraw.Location.X + buttonDraw.Width * 2, buttonDraw.Location.Y);
+            buttonSCANLINE.Height = buttonDraw.Height;
+            buttonSCANLINE.Width = buttonDraw.Width;
+            buttonFLOODFILL.Location = new Point(buttonDraw.Location.X + buttonDraw.Width * 3, buttonDraw.Location.Y);
+            buttonFLOODFILL.Height = buttonDraw.Height;
+            buttonFLOODFILL.Width = buttonDraw.Width;
+            buttonColorIn.Location = new Point(buttonDraw.Location.X + buttonDraw.Width * 4, buttonDraw.Location.Y);
+            buttonColorIn.Height = buttonDraw.Height;
+            buttonColorIn.Width = buttonDraw.Width;
             
+
         }
         private void resizeControHaft1(Control button, Point location, bool autoSize) {
             location.X = location.X - 1;
@@ -105,7 +123,7 @@ namespace ComputerGraphicsPJ{
             }
         }
         private void resizeControHaft2(Control button, Point location, bool autoSize) {
-            location.X = location.X - 1 + (this.Width/2);
+            location.X = location.X - 1 + (this.Width / 2);
             button.Location = location;
             if (autoSize) {
                 button.Width = this.Width / BUTTON_COUNT;
@@ -156,7 +174,7 @@ namespace ComputerGraphicsPJ{
         private void openGLControl_MouseDown(object sender, MouseEventArgs e) {
             switch (currentMouseMode) {
                 case MOUSE_MODE.DRAW: {
-                    setDrawCursor();
+                        setDrawCursor();
                         if (e.Button == MouseButtons.Right) {
                             setDefaultCursor();
                             currentPoly.addVertex(new Point(e.X, e.Y));
@@ -177,38 +195,38 @@ namespace ComputerGraphicsPJ{
                     }
                 case MOUSE_MODE.DRAG: {
 
-                    if (currentDrawType == DRAW_TYPE.POLYGON) {
-                        Point[] pointArr = new Point[currentPoly.getPointArr().Count];
-                        if (currentPoly.havePointInLines(new Point(e.X, e.Y))) {
-                            currentPoly.DrawControlPoint(false, true);
-                            isShowingControlPoints = true;
+                        if (currentDrawType == DRAW_TYPE.POLYGON) {
+                            Point[] pointArr = new Point[currentPoly.getPointArr().Count];
+                            if (currentPoly.havePointInLines(new Point(e.X, e.Y))) {
+                                currentPoly.DrawControlPoint(false, true);
+                                isShowingControlPoints = true;
+                            } else {
+                                currentPoly.DrawControlPoint(false, false);
+                                isShowingControlPoints = false;
+                            }
                         } else {
-                            currentPoly.DrawControlPoint(false, false);
-                            isShowingControlPoints = false;
-                        }
-                    } else {
-                        Point[] pointArr = new Point[currentShape.getPointArr().Count];
-                        Point pDown = new Point(e.X, e.Y);
-                        if (isShowingControlPoints) {
-                            if (currentShape.havePointInside(pDown)) {
-                                onPressMove = true;
-                                startMovePoint = new Point(e.X, e.Y);
-                                break;
+                            Point[] pointArr = new Point[currentShape.getPointArr().Count];
+                            Point pDown = new Point(e.X, e.Y);
+                            if (isShowingControlPoints) {
+                                if (currentShape.havePointInside(pDown)) {
+                                    onPressMove = true;
+                                    startMovePoint = new Point(e.X, e.Y);
+                                    break;
+                                }
+                            }
+                            if (currentShape.havePointInLines(pDown)) {
+                                currentShape.DrawControlPoint(false, true);
+                                isShowingControlPoints = true;
+                            } else {
+                                currentShape.DrawControlPoint(false, false);
+                                isShowingControlPoints = false;
                             }
                         }
-                        if (currentShape.havePointInLines(pDown)) {
-                            currentShape.DrawControlPoint(false, true);
-                            isShowingControlPoints = true;
-                        } else {
-                            currentShape.DrawControlPoint(false, false);
-                            isShowingControlPoints = false;
-                        }
-                    }
-                    break;
+                        break;
                     }
             }
 
-            
+
         }
 
         private void openGLControl_MouseMove(object sender, MouseEventArgs e) {
@@ -229,60 +247,60 @@ namespace ComputerGraphicsPJ{
                         }
                         watch.Stop();
                         labelTime.Text = (watch.ElapsedMilliseconds) + " ms";
-                    break;
+                        break;
                     }
                 case MOUSE_MODE.DRAG: {
-                    if (isShowingControlPoints) {
-                        Point mP = new Point(e.X, e.Y);
-                        if (currentDrawType == DRAW_TYPE.POLYGON) {
-                            if (currentPoly.havePointInside(mP)) {
-                                setAllSizeCursor();
-                            } else {
-                                if (currentPoly.isControlPointsContaint(mP)) {
-                                    Point centerPointShape = currentPoly.getCenterPoint();
-                                    if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
-                                        setVerticalCursor();
-                                    } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
-                                        setHorizontalCursor();
-                                    } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
-                                        || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
-                                        setSizeTopRightCursor();
-                                    } else {
-                                        setSizeTopLeftCursor();
-                                    }
+                        if (isShowingControlPoints) {
+                            Point mP = new Point(e.X, e.Y);
+                            if (currentDrawType == DRAW_TYPE.POLYGON) {
+                                if (currentPoly.havePointInside(mP)) {
+                                    setAllSizeCursor();
                                 } else {
-                                    setDefaultCursor();
+                                    if (currentPoly.isControlPointsContaint(mP)) {
+                                        Point centerPointShape = currentPoly.getCenterPoint();
+                                        if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
+                                            setVerticalCursor();
+                                        } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
+                                            setHorizontalCursor();
+                                        } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
+                                            || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
+                                            setSizeTopRightCursor();
+                                        } else {
+                                            setSizeTopLeftCursor();
+                                        }
+                                    } else {
+                                        setDefaultCursor();
+                                    }
+                                }
+                            } else {
+                                if (currentShape.havePointInside(mP)) {
+                                    setAllSizeCursor();
+                                } else {
+                                    if (currentShape.isControlPointsContaint(mP)) {
+                                        Point centerPointShape = currentShape.getCenterPoint();
+                                        if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
+                                            setVerticalCursor();
+                                        } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
+                                            setHorizontalCursor();
+                                        } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
+                                            || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
+                                            setSizeTopRightCursor();
+                                        } else {
+                                            setSizeTopLeftCursor();
+                                        }
+                                    } else {
+                                        setDefaultCursor();
+                                    }
+                                }
+                                if (onPressMove) {
+                                    endMovePoint = new Point(e.X, e.Y);
+                                    currentShape.onMove(startMovePoint, endMovePoint);
                                 }
                             }
                         } else {
-                            if (currentShape.havePointInside(mP)) {
-                                setAllSizeCursor();
-                            } else {
-                                if (currentShape.isControlPointsContaint(mP)) {
-                                    Point centerPointShape = currentShape.getCenterPoint();
-                                    if (Math.Abs(mP.X - centerPointShape.X) <= 2) {
-                                        setVerticalCursor();
-                                    } else if (Math.Abs(mP.Y - centerPointShape.Y) <= 2) {
-                                        setHorizontalCursor();
-                                    } else if ((mP.X > centerPointShape.X && mP.Y < centerPointShape.Y)
-                                        || (mP.X < centerPointShape.X && mP.Y > centerPointShape.Y)) {
-                                        setSizeTopRightCursor();
-                                    } else {
-                                        setSizeTopLeftCursor();
-                                    }
-                                } else {
-                                    setDefaultCursor();
-                                }
-                            }
-                            if (onPressMove) {
-                                endMovePoint = new Point(e.X, e.Y);
-                                currentShape.onMove(startMovePoint, endMovePoint);
-                            }
+                            setDefaultCursor();
                         }
-                    } else {
-                        setDefaultCursor();
-                    }
-                    break;
+                        break;
                     }
             }
         }
@@ -299,69 +317,93 @@ namespace ComputerGraphicsPJ{
                             onPress = false;
                         }
                         arrCurrentShape.Add(currentShape);
-                    break;
+                        break;
                     }
                 case MOUSE_MODE.DRAG: {
-                    onPressMove = false;
-                    //if (isShowingControlPoints) {
-                    //    currentShape.setStartPoint(
-                    //        new Point(
-                    //            currentShape.getStartPoint().X + (endMovePoint.X - startMovePoint.X),
-                    //            currentShape.getStartPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
-                    //    currentShape.setEndPoint(
-                    //       new Point(
-                    //           currentShape.getEndPoint().X + (endMovePoint.X - startMovePoint.X),
-                    //           currentShape.getEndPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
-                    //}
-                    break;
+                        onPressMove = false;
+                        if (isShowingControlPoints) {
+                            currentShape.setStartPoint(
+                                new Point(
+                                    currentShape.getStartPoint().X + (endMovePoint.X - startMovePoint.X),
+                                    currentShape.getStartPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+                            currentShape.setEndPoint(
+                               new Point(
+                                   currentShape.getEndPoint().X + (endMovePoint.X - startMovePoint.X),
+                                   currentShape.getEndPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+                        }
+                        break;
                     }
             }
-            
+
         }
 
-        private void createNewShapeType(DRAW_TYPE type){
-            switch(type){
+        private void createNewShapeType(DRAW_TYPE type) {
+            switch (type) {
                 case DRAW_TYPE.LINE: {
+                        PolyDrawed = false;
                         currentDrawType = DRAW_TYPE.LINE;
                         currentShape = new Line(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.CIRCLE: {
-                    currentDrawType = DRAW_TYPE.CIRCLE;
+                        PolyDrawed = false;
+                        currentDrawType = DRAW_TYPE.CIRCLE;
                         currentShape = new Circle(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.ELLIPSE: {
+                        PolyDrawed = false;
                         currentDrawType = DRAW_TYPE.ELLIPSE;
                         currentShape = new Ellipse(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.RECTANGLE: {
+                        PolyDrawed = false;
                         currentDrawType = DRAW_TYPE.RECTANGLE;
                         currentShape = new Object.Rectangle(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_TRIANGLE: {
+                        PolyDrawed = false;
                         currentDrawType = DRAW_TYPE.EQ_TRIANGLE;
                         currentShape = new EqTriagle(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_PENTAGON: {
+                        PolyDrawed = false;
                         currentDrawType = DRAW_TYPE.EQ_PENTAGON;
                         currentShape = new EqPentagon(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.EQ_HEXAGON: {
+                        PolyDrawed = false;
                         currentDrawType = DRAW_TYPE.EQ_HEXAGON;
                         currentShape = new EqHexagon(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
                         break;
                     }
                 case DRAW_TYPE.POLYGON: {
-                    currentDrawType = DRAW_TYPE.POLYGON;
-                    currentShape = new Line(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
-                    currentPoly = new Polygon(new ArrayList(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
-                    break;
-                   }
+                        currentDrawType = DRAW_TYPE.POLYGON;
+                        currentShape = new Line(currentShape.getStartPoint(), currentShape.getEndPoint(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        currentPoly = new Polygon(new ArrayList(), currentShape.getGL(), currentShape.getColor(), currentShape.getLineWidth());
+                        PolyDrawed = true;
+                        break;
+                    }
+                case DRAW_TYPE.SCANLINE: {
+                        currentDrawType = DRAW_TYPE.SCANLINE;
+                        ArrayList ArrPoint = currentShape.getPointArr();
+                        float[] color = new float[] { colorDialog1.Color.R / 255f, colorDialog1.Color.G / 255f, colorDialog1.Color.B / 255f };
+                        if (PolyDrawed == false) currentScanline = new Scanline(currentShape.getPointArr(), currentShape.getGL(), color, currentShape.getLineWidth());
+                        else currentScanline = new Scanline(currentPoly.getPointArr(), currentPoly.getGL(), color, currentPoly.getLineWidth());
+                        break;
+                    }
+                case DRAW_TYPE.FLOODFILL: {
+                        currentDrawType = DRAW_TYPE.FLOODFILL;
+                        ArrayList ArrPoint = currentShape.getPointArr();
+                        float[] color = new float[] { colorDialog1.Color.R / 255f, colorDialog1.Color.G / 255f, colorDialog1.Color.B / 255f };
+                        if (PolyDrawed == false) currentFloodfill = new Floodfill(currentShape.getPointArr(), currentShape.getGL(), color, currentShape.getLineWidth());
+                        else currentFloodfill = new Floodfill(currentPoly.getPointArr(), currentPoly.getGL(), color, currentPoly.getLineWidth());
+                        break;
+                    }
             }
         }
 
@@ -426,14 +468,13 @@ namespace ComputerGraphicsPJ{
                     currentShape.Draw();
                 }
 
-            } 
+            }
         }
 
         private void showPannelWidth() {
-
             if (currentShape.getLineWidth() == 1f) {
                 buttonWidth1f.Select();
-            } else if(currentShape.getLineWidth() == 3f) {
+            } else if (currentShape.getLineWidth() == 3f) {
                 buttonWidth3f.Select();
             } else if (currentShape.getLineWidth() == 5f) {
                 buttonWidth5f.Select();
@@ -443,13 +484,13 @@ namespace ComputerGraphicsPJ{
             panelLineWidth.Visible = true;
         }
 
-        private void hidePannelWidth(){
+        private void hidePannelWidth() {
             panelLineWidth.Visible = false;
         }
 
         private void buttonWidth1f_MouseMove(object sender, MouseEventArgs e) {
             if (currentShape.getLineWidth() != 1f) {
-                
+
                 currentShape.setLineWidth(1f);
                 if (currentDrawType == DRAW_TYPE.POLYGON) {
                     currentPoly.setLineWidth(1f);
@@ -459,7 +500,7 @@ namespace ComputerGraphicsPJ{
                     currentShape.Draw();
                 }
             }
-            
+
         }
 
         private void buttonWidth3f_MouseMove(object sender, MouseEventArgs e) {
@@ -514,7 +555,7 @@ namespace ComputerGraphicsPJ{
             } else {
                 currentShape.DrawControlPoint(false, false);
             }
-            
+
         }
 
         private void buttonDrag_Click(object sender, EventArgs e) {
@@ -525,7 +566,48 @@ namespace ComputerGraphicsPJ{
             } else {
                 currentShape.DrawControlPoint(false, true);
             }
-            
+
+        }
+
+        //FILL COLOR BUTTONS
+
+        /*  HƯỚNG DẪN SỬ DỤNG SCANLINE. CÁCH GỌI CURRENTSCANLINE.DRAW(số dòng muốn tô, getVertexs hình đang xét(Shape or Poly), true if Poly)
+         *  NẾU MUỐN GỌI TÔ TỪNG DÒNG TỪ TRÊN XUỐNG THÌ CHẠY LOOP TỪ YMIN + 1 -> YMAX + 1 
+         *  NẾU MUỐN GỌI TÔ HẾT HÌNH 1 LẦN GỌI GÁN COUNT = YMAX + 1 (KHỎI CẦN LOOP)
+         */
+        private async void button_SCANLINE_CLICK(object sender, EventArgs e) {
+            createNewShapeType(DRAW_TYPE.SCANLINE);
+            hidePannelWidth();
+            int count = currentScanline.getymin() + 1;
+            while (count < currentScanline.getymax() + 1)   //scanline updown ymin -> ymax
+            {
+                if (PolyDrawed) currentScanline.Draw(count, currentPoly.getVertexs(), true);
+                else currentScanline.Draw(count, currentShape.getVertexs(), false);
+                await Task.Delay(5);
+                count++;
+            }
+        }
+
+        /*  HƯỚNG DẪN SỬ DỤNG FLOODFILL. CÁCH GỌI CURRENTFLOODFILL.DRAW(tốc độ loang, POINT INSIDE.X, POINT INSIDE.Y)
+         */
+        private async void button_FLOODFILL_CLICK(object sender, EventArgs e) {
+            createNewShapeType(DRAW_TYPE.FLOODFILL);
+            hidePannelWidth();
+            int speed = 1, S = (currentFloodfill.getymax() - currentFloodfill.getymin()) * (currentFloodfill.getxmax() - currentFloodfill.getxmin());
+            while (speed < S) {
+                if (PolyDrawed == false) currentFloodfill.Draw(speed, currentShape.getCenterPoint().X, currentShape.getCenterPoint().Y);
+                else currentFloodfill.Draw(speed, currentPoly.getCenterPoint().X, currentPoly.getCenterPoint().Y);
+                await Task.Delay(1);
+                speed += 200;
+            }
+        }
+
+        private void pictuterBoxin(object sender, EventArgs e) {
+            hidePannelWidth();
+            if (colorDialog1.ShowDialog() == DialogResult.OK) {
+                float[] color = new float[] { colorDialog1.Color.R / 255f, colorDialog1.Color.G / 255f, colorDialog1.Color.B / 255f };
+                buttonColorIn.BackColor =  colorDialog1.Color;
+            }
         }
 
         private void setDefaultCursor() {
@@ -555,6 +637,6 @@ namespace ComputerGraphicsPJ{
         private void setAllSizeCursor() {
             openGLControl.Cursor = Cursors.SizeAll;
         }
-    }
 
+    }
 }

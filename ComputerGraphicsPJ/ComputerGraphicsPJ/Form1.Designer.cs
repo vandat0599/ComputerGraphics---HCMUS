@@ -40,20 +40,23 @@
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.buttonLineWidth = new System.Windows.Forms.Button();
-            this.panelLineWidth = new System.Windows.Forms.Panel();
             this.buttonWidth8f = new System.Windows.Forms.Button();
             this.buttonWidth5f = new System.Windows.Forms.Button();
             this.buttonWidth3f = new System.Windows.Forms.Button();
             this.buttonWidth1f = new System.Windows.Forms.Button();
             this.labelTime = new System.Windows.Forms.Label();
-            this.pictureBoxColorPicker = new System.Windows.Forms.PictureBox();
             this.buttonPolygon = new System.Windows.Forms.Button();
             this.buttonDraw = new System.Windows.Forms.Button();
             this.buttonDrag = new System.Windows.Forms.Button();
+            this.buttonSCANLINE = new System.Windows.Forms.Button();
+            this.buttonFLOODFILL = new System.Windows.Forms.Button();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
+            this.buttonColorIn = new System.Windows.Forms.Button();
+            this.panelLineWidth = new System.Windows.Forms.Panel();
+            this.pictureBoxColorPicker = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).BeginInit();
             this.panelLineWidth.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColorPicker)).BeginInit();
             this.SuspendLayout();
             // 
             // eventLog1
@@ -158,20 +161,9 @@
             this.buttonLineWidth.UseVisualStyleBackColor = true;
             this.buttonLineWidth.Click += new System.EventHandler(this.buttonLineWidth_Click);
             // 
-            // panelLineWidth
-            // 
-            this.panelLineWidth.Controls.Add(this.buttonWidth8f);
-            this.panelLineWidth.Controls.Add(this.buttonWidth5f);
-            this.panelLineWidth.Controls.Add(this.buttonWidth3f);
-            this.panelLineWidth.Controls.Add(this.buttonWidth1f);
-            this.panelLineWidth.Location = new System.Drawing.Point(1101, 81);
-            this.panelLineWidth.Name = "panelLineWidth";
-            this.panelLineWidth.Size = new System.Drawing.Size(200, 320);
-            this.panelLineWidth.TabIndex = 3;
-            // 
             // buttonWidth8f
             // 
-            this.buttonWidth8f.Location = new System.Drawing.Point(3, 226);
+            this.buttonWidth8f.Location = new System.Drawing.Point(6, 224);
             this.buttonWidth8f.Name = "buttonWidth8f";
             this.buttonWidth8f.Size = new System.Drawing.Size(194, 61);
             this.buttonWidth8f.TabIndex = 0;
@@ -182,7 +174,7 @@
             // 
             // buttonWidth5f
             // 
-            this.buttonWidth5f.Location = new System.Drawing.Point(6, 159);
+            this.buttonWidth5f.Location = new System.Drawing.Point(6, 157);
             this.buttonWidth5f.Name = "buttonWidth5f";
             this.buttonWidth5f.Size = new System.Drawing.Size(194, 61);
             this.buttonWidth5f.TabIndex = 0;
@@ -193,7 +185,7 @@
             // 
             // buttonWidth3f
             // 
-            this.buttonWidth3f.Location = new System.Drawing.Point(6, 81);
+            this.buttonWidth3f.Location = new System.Drawing.Point(6, 90);
             this.buttonWidth3f.Name = "buttonWidth3f";
             this.buttonWidth3f.Size = new System.Drawing.Size(194, 61);
             this.buttonWidth3f.TabIndex = 0;
@@ -204,7 +196,7 @@
             // 
             // buttonWidth1f
             // 
-            this.buttonWidth1f.Location = new System.Drawing.Point(3, 3);
+            this.buttonWidth1f.Location = new System.Drawing.Point(6, 9);
             this.buttonWidth1f.Name = "buttonWidth1f";
             this.buttonWidth1f.Size = new System.Drawing.Size(194, 60);
             this.buttonWidth1f.TabIndex = 0;
@@ -223,16 +215,6 @@
             this.labelTime.Size = new System.Drawing.Size(70, 25);
             this.labelTime.TabIndex = 4;
             this.labelTime.Text = "NNms";
-            // 
-            // pictureBoxColorPicker
-            // 
-            this.pictureBoxColorPicker.BackColor = System.Drawing.Color.Red;
-            this.pictureBoxColorPicker.Location = new System.Drawing.Point(1431, -1);
-            this.pictureBoxColorPicker.Name = "pictureBoxColorPicker";
-            this.pictureBoxColorPicker.Size = new System.Drawing.Size(82, 75);
-            this.pictureBoxColorPicker.TabIndex = 6;
-            this.pictureBoxColorPicker.TabStop = false;
-            this.pictureBoxColorPicker.Click += new System.EventHandler(this.pictureBoxColorPicker_Click);
             // 
             // buttonPolygon
             // 
@@ -259,22 +241,76 @@
             this.buttonDrag.Location = new System.Drawing.Point(266, 76);
             this.buttonDrag.Name = "buttonDrag";
             this.buttonDrag.Size = new System.Drawing.Size(248, 76);
-            this.buttonDrag.TabIndex = 8;
+            this.buttonDrag.TabIndex = 1;
             this.buttonDrag.Text = "DRAG_MODE";
             this.buttonDrag.UseVisualStyleBackColor = true;
             this.buttonDrag.Click += new System.EventHandler(this.buttonDrag_Click);
+            // 
+            // buttonSCANLINE
+            // 
+            this.buttonSCANLINE.Location = new System.Drawing.Point(520, 81);
+            this.buttonSCANLINE.Name = "buttonSCANLINE";
+            this.buttonSCANLINE.Size = new System.Drawing.Size(127, 63);
+            this.buttonSCANLINE.TabIndex = 1;
+            this.buttonSCANLINE.Text = "SCANLINE";
+            this.buttonSCANLINE.UseVisualStyleBackColor = true;
+            this.buttonSCANLINE.Click += new System.EventHandler(this.button_SCANLINE_CLICK);
+            // 
+            // buttonFLOODFILL
+            // 
+            this.buttonFLOODFILL.Location = new System.Drawing.Point(700, 84);
+            this.buttonFLOODFILL.Name = "buttonFLOODFILL";
+            this.buttonFLOODFILL.Size = new System.Drawing.Size(278, 60);
+            this.buttonFLOODFILL.TabIndex = 1;
+            this.buttonFLOODFILL.Text = "FLOODFILL";
+            this.buttonFLOODFILL.UseVisualStyleBackColor = true;
+            this.buttonFLOODFILL.Click += new System.EventHandler(this.button_FLOODFILL_CLICK);
+            // 
+            // buttonColorIn
+            // 
+            this.buttonColorIn.Location = new System.Drawing.Point(1077, 95);
+            this.buttonColorIn.Name = "buttonColorIn";
+            this.buttonColorIn.Size = new System.Drawing.Size(108, 61);
+            this.buttonColorIn.TabIndex = 1;
+            this.buttonColorIn.Text = "FillColor";
+            this.buttonColorIn.UseVisualStyleBackColor = true;
+            this.buttonColorIn.Click += new System.EventHandler(this.pictuterBoxin);
+            // 
+            // panelLineWidth
+            // 
+            this.panelLineWidth.Controls.Add(this.buttonWidth8f);
+            this.panelLineWidth.Controls.Add(this.buttonWidth1f);
+            this.panelLineWidth.Controls.Add(this.buttonWidth5f);
+            this.panelLineWidth.Controls.Add(this.buttonWidth3f);
+            this.panelLineWidth.Location = new System.Drawing.Point(1599, 95);
+            this.panelLineWidth.Name = "panelLineWidth";
+            this.panelLineWidth.Size = new System.Drawing.Size(200, 321);
+            this.panelLineWidth.TabIndex = 9;
+            // 
+            // pictureBoxColorPicker
+            // 
+            this.pictureBoxColorPicker.Location = new System.Drawing.Point(1294, 295);
+            this.pictureBoxColorPicker.Name = "pictureBoxColorPicker";
+            this.pictureBoxColorPicker.Size = new System.Drawing.Size(219, 92);
+            this.pictureBoxColorPicker.TabIndex = 10;
+            this.pictureBoxColorPicker.Text = "Line Color";
+            this.pictureBoxColorPicker.UseVisualStyleBackColor = true;
+            this.pictureBoxColorPicker.Click += new System.EventHandler(this.pictureBoxColorPicker_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2060, 752);
+            this.Controls.Add(this.pictureBoxColorPicker);
+            this.Controls.Add(this.panelLineWidth);
+            this.Controls.Add(this.buttonColorIn);
+            this.Controls.Add(this.buttonFLOODFILL);
+            this.Controls.Add(this.buttonSCANLINE);
             this.Controls.Add(this.buttonDrag);
             this.Controls.Add(this.buttonDraw);
             this.Controls.Add(this.buttonPolygon);
-            this.Controls.Add(this.pictureBoxColorPicker);
             this.Controls.Add(this.labelTime);
-            this.Controls.Add(this.panelLineWidth);
             this.Controls.Add(this.buttonLineWidth);
             this.Controls.Add(this.buttonEllipse);
             this.Controls.Add(this.buttonEqHexagon);
@@ -290,7 +326,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.openGLControl)).EndInit();
             this.panelLineWidth.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxColorPicker)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -310,16 +345,20 @@
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.Button buttonLineWidth;
-        private System.Windows.Forms.Panel panelLineWidth;
         private System.Windows.Forms.Button buttonWidth5f;
         private System.Windows.Forms.Button buttonWidth3f;
         private System.Windows.Forms.Button buttonWidth1f;
         private System.Windows.Forms.Button buttonWidth8f;
         private System.Windows.Forms.Label labelTime;
-        private System.Windows.Forms.PictureBox pictureBoxColorPicker;
         private System.Windows.Forms.Button buttonPolygon;
         private System.Windows.Forms.Button buttonDrag;
         private System.Windows.Forms.Button buttonDraw;
+        private System.Windows.Forms.Button buttonSCANLINE;
+        private System.Windows.Forms.Button buttonFLOODFILL;
+        private System.Windows.Forms.ColorDialog colorDialog1;
+        private System.Windows.Forms.Button buttonColorIn;
+        private System.Windows.Forms.Panel panelLineWidth;
+        private System.Windows.Forms.Button pictureBoxColorPicker;
     }
 }
 

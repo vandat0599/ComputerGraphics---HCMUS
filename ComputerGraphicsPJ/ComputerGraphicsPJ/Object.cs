@@ -9,10 +9,10 @@ using System.Collections;
 
 namespace Object {
 
-    class Constant{
+    class Constant {
         public const double EPSILON = 4d;
     }
-        
+
     class Shape {
         protected Point startPoint;
         protected Point endPoint;
@@ -60,13 +60,13 @@ namespace Object {
             Point p7 = new Point(p.X + 1, p.Y + 1);
             Point p8 = new Point(p.X - 1, p.Y + 1);
             Point p9 = new Point(p.X + 1, p.Y - 1);
-            return this.controlPoints.Contains(p1) 
-                || this.controlPoints.Contains(p2) 
-                || this.controlPoints.Contains(p3) 
+            return this.controlPoints.Contains(p1)
+                || this.controlPoints.Contains(p2)
+                || this.controlPoints.Contains(p3)
                 || this.controlPoints.Contains(p4)
                 || this.controlPoints.Contains(p5)
-                || this.controlPoints.Contains(p6) 
-                || this.controlPoints.Contains(p7) 
+                || this.controlPoints.Contains(p6)
+                || this.controlPoints.Contains(p7)
                 || this.controlPoints.Contains(p8)
                 || this.controlPoints.Contains(p9);
         }
@@ -90,18 +90,18 @@ namespace Object {
             }
             gl.Color(controlColor);
             gl.LineWidth(lineWidth + 2);
-            
+
             gl.Begin(OpenGL.GL_POINTS);
             foreach (Point p in controlPoints) {
                 gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y));
-                gl.Vertex(p.X+1, gl.RenderContextProvider.Height - (p.Y));
-                gl.Vertex(p.X-1, gl.RenderContextProvider.Height - (p.Y));
-                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y+1));
-                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y-1));
-                gl.Vertex(p.X-1, gl.RenderContextProvider.Height - (p.Y-1));
-                gl.Vertex(p.X+1, gl.RenderContextProvider.Height - (p.Y+1));
-                gl.Vertex(p.X-1, gl.RenderContextProvider.Height - (p.Y+1));
-                gl.Vertex(p.X+1, gl.RenderContextProvider.Height - (p.Y-1));
+                gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y));
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y + 1));
+                gl.Vertex(p.X, gl.RenderContextProvider.Height - (p.Y - 1));
+                gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y - 1));
+                gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y + 1));
+                gl.Vertex(p.X - 1, gl.RenderContextProvider.Height - (p.Y + 1));
+                gl.Vertex(p.X + 1, gl.RenderContextProvider.Height - (p.Y - 1));
             }
             gl.End();
             gl.Flush();
@@ -142,7 +142,7 @@ namespace Object {
         public virtual void onMove(Point start, Point end) {
             Point v = new Point(end.X - start.X, end.Y - start.Y);
             this.startPoint.X += v.X;
-            this.startPoint.Y += v.Y; 
+            this.startPoint.Y += v.Y;
             this.endPoint.X += v.X;
             this.endPoint.Y += v.Y;
             this.Draw(true);
@@ -155,7 +155,7 @@ namespace Object {
         }
     }
 
-    class Line: Shape {
+    class Line : Shape {
         public Line(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
 
         public override void Draw(bool erase = true) {
@@ -211,7 +211,7 @@ namespace Object {
         }
     }
 
-    class Circle: Shape {
+    class Circle : Shape {
         public Circle(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
 
         public override void Draw(bool erase = true) {
@@ -226,7 +226,7 @@ namespace Object {
             //double r = Math.Abs(endPoint.X - startPoint.X);
             this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + r), startPoint.Y));
             this.addControlPoint(new Point(Convert.ToInt32(startPoint.X - r), startPoint.Y));
-            this.addControlPoint(new Point(startPoint.X,Convert.ToInt32(startPoint.Y - r)));
+            this.addControlPoint(new Point(startPoint.X, Convert.ToInt32(startPoint.Y - r)));
             this.addControlPoint(new Point(startPoint.X, Convert.ToInt32(startPoint.Y + r)));
             this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + r), Convert.ToInt32(startPoint.Y + r)));
             this.addControlPoint(new Point(Convert.ToInt32(startPoint.X + r), Convert.ToInt32(startPoint.Y - r)));
@@ -256,7 +256,7 @@ namespace Object {
                 this.addPointArr(new Point(y + startPoint.X, -x + startPoint.Y));
                 gl.Vertex(y + startPoint.X, gl.RenderContextProvider.Height - (x + startPoint.Y));
                 this.addPointArr(new Point(y + startPoint.X, x + startPoint.Y));
-                
+
                 while (x < y) {
                     if (p < 0) {
                         p = p + 2 * x + 3;
@@ -297,12 +297,12 @@ namespace Object {
             }
             double r = Math.Sqrt(Math.Pow(endPoint.X - startPoint.X, 2) + Math.Pow(endPoint.Y - startPoint.Y, 2));
             double d = Math.Sqrt(Math.Pow(point.X - startPoint.X, 2) + Math.Pow(point.Y - startPoint.Y, 2));
-            
+
             return d <= r;
         }
     }
 
-    class Rectangle: Shape {
+    class Rectangle : Shape {
         public Rectangle(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
 
         public override void Draw(bool erase = true) {
@@ -312,7 +312,7 @@ namespace Object {
             this.vertexs = new ArrayList();
             this.addControlPoint(startPoint);
             this.addControlPoint(endPoint);
-            this.addControlPoint(new Point(endPoint.X,startPoint.Y));
+            this.addControlPoint(new Point(endPoint.X, startPoint.Y));
             this.addControlPoint(new Point(startPoint.X, endPoint.Y));
             this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X) / 2, startPoint.Y));
             this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X) / 2, endPoint.Y));
@@ -345,7 +345,7 @@ namespace Object {
         }
     }
 
-    class Ellipse: Shape {
+    class Ellipse : Shape {
         public Ellipse(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
 
         public override void Draw(bool erase = true) {
@@ -452,7 +452,7 @@ namespace Object {
 
     }
 
-    class EqTriagle: Shape {
+    class EqTriagle : Shape {
         public EqTriagle(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
         public override void Draw(bool erase = true) {
             base.Draw();
@@ -467,7 +467,7 @@ namespace Object {
             this.addControlPoint(new Point(startPoint.X, endPoint.Y));
             this.addControlPoint(new Point(bX, bY));
             this.addControlPoint(new Point(endPoint.X, endPoint.Y));
-            this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X)/2,endPoint.Y));
+            this.addControlPoint(new Point(startPoint.X + (endPoint.X - startPoint.X) / 2, endPoint.Y));
             this.addControlPoint(new Point(startPoint.X, bY));
             this.addControlPoint(new Point(endPoint.X, bY));
             this.addControlPoint(new Point(startPoint.X, endPoint.Y - (endPoint.Y - bY) / 2));
@@ -497,7 +497,7 @@ namespace Object {
         }
     }
 
-    class EqPentagon: Shape {
+    class EqPentagon : Shape {
         public EqPentagon(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
 
         public override void Draw(bool erase = true) {
@@ -505,8 +505,8 @@ namespace Object {
             this.pointArr = new ArrayList();
             this.controlPoints = new ArrayList();
             this.vertexs = new ArrayList();
-            double a = Math.Abs(endPoint.X - startPoint.X)*2*3/5;
-            double R = a /(2*Math.Sin(36*Math.PI/180));
+            double a = Math.Abs(endPoint.X - startPoint.X) * 2 * 3 / 5;
+            double R = a / (2 * Math.Sin(36 * Math.PI / 180));
             double x = Math.Sin(72 * Math.PI / 180) * a;
             if (erase) {
                 gl.Clear(OpenGL.GL_COLOR_BUFFER_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
@@ -515,7 +515,7 @@ namespace Object {
             Point p2 = new Point(startPoint.X + Math.Abs(endPoint.X - startPoint.X), Convert.ToInt32(endPoint.Y - x));
             Point p3 = new Point(Convert.ToInt32(startPoint.X + a / 2), endPoint.Y);
             Point p4 = new Point(Convert.ToInt32(startPoint.X - a / 2), endPoint.Y);
-            Point p5 = new Point(Convert.ToInt32(startPoint.X - Math.Abs(endPoint.X - startPoint.X)),Convert.ToInt32(endPoint.Y - x));
+            Point p5 = new Point(Convert.ToInt32(startPoint.X - Math.Abs(endPoint.X - startPoint.X)), Convert.ToInt32(endPoint.Y - x));
             this.addVertexs(pTop);
             this.addVertexs(p2);
             this.addVertexs(p3);
@@ -532,9 +532,9 @@ namespace Object {
             this.addControlPoint(new Point(pTop.X - (endPoint.X - pTop.X), pTop.Y));
 
             Line l1 = new Line(pTop, p2, gl, color, lineWidth);
-            Line l2 = new Line(p2,p3, gl, color, lineWidth);
-            Line l3 = new Line(p3,p4, gl, color, lineWidth);
-            Line l4 = new Line(p4,p5, gl, color, lineWidth);
+            Line l2 = new Line(p2, p3, gl, color, lineWidth);
+            Line l3 = new Line(p3, p4, gl, color, lineWidth);
+            Line l4 = new Line(p4, p5, gl, color, lineWidth);
             Line l5 = new Line(p5, pTop, gl, color, lineWidth);
             l1.Draw(false);
             l2.Draw(false);
@@ -549,15 +549,15 @@ namespace Object {
         }
 
         public override Point getCenterPoint() {
-            double a = Math.Abs(endPoint.X - startPoint.X)*2*3/5;
-            double R = a /(2*Math.Sin(36*Math.PI/180));
+            double a = Math.Abs(endPoint.X - startPoint.X) * 2 * 3 / 5;
+            double R = a / (2 * Math.Sin(36 * Math.PI / 180));
             double x = Math.Sin(72 * Math.PI / 180) * a;
             Point pTop = new Point(startPoint.X, Convert.ToInt32(endPoint.Y - x - Math.Abs(endPoint.X - startPoint.X) * Math.Sin(36 * Math.PI / 180)));
-            return new Point(pTop.X,(pTop.Y + endPoint.Y)/2);
+            return new Point(pTop.X, (pTop.Y + endPoint.Y) / 2);
         }
     }
 
-    class EqHexagon: Shape {
+    class EqHexagon : Shape {
         public EqHexagon(Point startPoint, Point endPoint, OpenGL gl, float[] color, float lineWidth) : base(startPoint, endPoint, gl, color, lineWidth) { }
 
         public override void Draw(bool erase = true) {
@@ -643,9 +643,9 @@ namespace Object {
         public void setLineArr(ArrayList vertexArr) { this.vertexs = vertexArr; }
         public void addVertex(Point point) { this.vertexs.Add(point); }
         public void removeLastVertex() { this.vertexs.RemoveAt(vertexs.Count - 1); }
-        public OpenGL getGL(){return gl;}
-        public void setGL(OpenGL gl){this.gl = gl;}
-        public float getLineWidth(){return lineWidth;}
+        public OpenGL getGL() { return gl; }
+        public void setGL(OpenGL gl) { this.gl = gl; }
+        public float getLineWidth() { return lineWidth; }
         public void setLineWidth(float lineWidth) { this.lineWidth = lineWidth; }
         public float[] getColor() { return color; }
         public void setColor(float[] color) { this.color = color; }
@@ -816,4 +816,305 @@ namespace Object {
                 || this.vertexs.Contains(p9);
         }
     }
+
+    class Scanline {
+        public ArrayList vertexArr;
+        private OpenGL gl;
+        private float[] color;
+        float lineWidth;
+        int xmin, ymin, xmax, ymax, edge;
+        Point[] edge_arr = new Point[50];
+        byte[][] arr_row_col;
+
+        public Scanline(ArrayList vertexArr, OpenGL gl, float[] color, float lineWidth) {
+            //init
+            this.vertexArr = vertexArr;
+            this.gl = gl;
+            this.color = color;
+            this.lineWidth = lineWidth;
+
+            //copy to PointArr[]
+            Point[] ps = new Point[vertexArr.Count + 1];
+            vertexArr.CopyTo(ps);
+            ps[vertexArr.Count] = ps[0];
+
+            //update max min x y
+            xmin = ps[0].X; ymin = ps[0].Y; xmax = xmin; ymax = ymin;
+            for (int i = 0; i < vertexArr.Count + 1; i++) {
+                if (this.xmin > ps[i].X) this.xmin = ps[i].X;
+                if (this.ymin > ps[i].Y) this.ymin = ps[i].Y;
+                if (this.xmax < ps[i].X) this.xmax = ps[i].X;
+                if (this.ymax < ps[i].Y) this.ymax = ps[i].Y;
+            }
+        }
+        public void setColor(float[] color) { this.color = color; }
+
+        public float[] getColor() { return this.color; }
+
+        public int getymin() { return ymin; }
+
+        public int getymax() { return ymax; }
+
+        void findedge_poly(int row, Point[] ps, Point[] ps_top, int count) {
+            //init
+            Point pointcheck = new Point(xmin, row);
+            bool top = false;
+            int col = xmin;
+            //scan left -> right
+            while (col <= xmax) {
+                //found point
+                if (arr_row_col[row][col] == 1) {
+                    //init top point check
+                    top = false;
+                    while (arr_row_col[row][col] == 1) {
+                        //create point
+                        pointcheck = new Point(col, row);
+
+                        //check top point
+                        for (int i = 0; i < count; i++) {
+                            if (ps_top[i] == pointcheck) {
+                                top = true;
+                                break;
+                            }
+                        }
+
+                        //update col
+                        col++;
+                    }
+                    //update arr_edge
+                    if (top) {
+                        edge++;
+                        edge_arr[edge] = pointcheck;
+                        edge++;
+                        edge_arr[edge] = pointcheck;
+                    } else {
+                        edge++;
+                        edge_arr[edge] = pointcheck;
+                    }
+                }
+                //update col
+                col++;
+            }
+
+            if (edge % 2 == 1) {
+                for (int i = 2; i < edge; i++) {
+                    edge_arr[i] = edge_arr[i + 1];
+                }
+                edge--;
+            }
+        }
+
+        void findedge(int row, Point[] ps) {
+            for (int col = xmin; col < xmax + 1; col++) {
+                if (arr_row_col[row][col] == 1 && arr_row_col[row][col + 1] == 0) {
+                    //point left
+                    edge++;
+                    edge_arr[edge] = new Point(col, row);
+
+                    for (int col2 = col + 1; col2 < xmax + 1; col2++) {
+                        if (arr_row_col[row][col2] == 1 && arr_row_col[row][col2 - 1] == 0) {
+                            //point right
+                            edge++;
+                            edge_arr[edge] = new Point(col2, row);
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        public void Draw(int count, ArrayList vertex, bool poly) {
+            //init
+            Point[] ps = new Point[vertexArr.Count];
+            vertexArr.CopyTo(ps);   //  Points_array (x,y)
+
+            Point[] ps_top = new Point[vertex.Count];
+            vertex.CopyTo(ps_top);   //  TopPoints_array (x,y)
+
+            //init array
+            arr_row_col = new byte[ymax + 3][];   //dong truoc cot sau
+            for (int i = 0; i < ymax + 3; i++)
+                arr_row_col[i] = new byte[xmax + 3];
+
+            //fill point -> array
+            for (int i = 0; i < vertexArr.Count; i++) {
+                //(ps[i].X, ps[i].Y)
+                arr_row_col[ps[i].Y][ps[i].X] = 1;
+            }
+
+            //draw
+            gl.Color(color);
+            gl.LineWidth(lineWidth);
+            gl.Begin(OpenGL.GL_LINES);
+            //find edge of row
+            for (int row = ymin + 1; row < count; row++) //scan up down
+            {
+                //init of each row
+                edge = 0;
+
+                //find edge
+                if (poly) findedge_poly(row, ps, ps_top, vertex.Count);
+                else findedge(row, ps);
+
+                //draw = arrayEdge
+                for (int k = 0; k < (edge / 2); k++) {
+                    if (edge_arr[2 * k + 1] != edge_arr[2 * (k + 1)]) {
+                        edge_arr[2 * k + 1].X++;
+                        edge_arr[2 * (k + 1)].X--;
+                        Line line = new Line(edge_arr[2 * k + 1], edge_arr[2 * (k + 1)], gl, color, lineWidth);
+                        line.Draw(false);
+                    }
+                }
+            }
+            gl.End();
+            gl.Flush();
+        }
+    }
+
+    class Floodfill {
+        public ArrayList vertexArr;
+        private OpenGL gl;
+        private float[] color;
+        float lineWidth;
+        int xmin, ymin, xmax, ymax, run;
+        byte[][] arr_row_col;
+        int[] stack_x, stack_y;
+        int count_stack;
+
+        public Floodfill(ArrayList vertexArr, OpenGL gl, float[] color, float lineWidth) {
+            this.vertexArr = vertexArr;
+            this.gl = gl;
+            this.color = color;
+            this.lineWidth = lineWidth;
+            //copy to PointArr[]
+            Point[] ps = new Point[vertexArr.Count + 1];
+            vertexArr.CopyTo(ps);
+            ps[vertexArr.Count] = ps[0];
+            //update max min x y
+            xmin = ps[0].X; ymin = ps[0].Y; xmax = xmin; ymax = ymin;
+            for (int i = 0; i < vertexArr.Count + 1; i++) {
+                if (this.xmin > ps[i].X) this.xmin = ps[i].X;
+                if (this.ymin > ps[i].Y) this.ymin = ps[i].Y;
+                if (this.xmax < ps[i].X) this.xmax = ps[i].X;
+                if (this.ymax < ps[i].Y) this.ymax = ps[i].Y;
+            }
+        }
+
+        public void setColor(float[] color) { this.color = color; }
+
+        public float[] getColor() { return this.color; }
+
+        public int getymin() { return ymin; }
+
+        public int getymax() { return ymax; }
+
+        public int getxmin() { return xmin; }
+
+        public int getxmax() { return xmax; }
+
+        void floodfill(int x, int y, int count) {
+            //init stack
+            int now_pos = 0;
+            stack_x[now_pos] = x;
+            stack_y[now_pos] = y;
+
+            //fill color
+            while (run < count) {
+                //init
+                x = stack_x[now_pos];
+                y = stack_y[now_pos];
+
+                //fill color (x,y)
+                if (y <= ymax && x <= xmax && y >= ymin && x >= xmin && arr_row_col[y][x] != 1) {
+                    gl.Vertex(x, gl.RenderContextProvider.Height - (y));
+                    arr_row_col[y][x] = 1;
+                }
+
+                // CHECK 4 WAYS
+                //(x + 1, y)
+                if (y <= ymax && x + 1 <= xmax && y >= ymin && x + 1 >= xmin && arr_row_col[y][x + 1] != 1) {
+                    count_stack++;
+                    stack_x[count_stack] = x + 1;
+                    stack_y[count_stack] = y;
+
+                    gl.Vertex(x + 1, gl.RenderContextProvider.Height - (y));
+                    arr_row_col[y][x + 1] = 1;
+                }
+                //(x - 1, y)
+                if (y <= ymax && x - 1 <= xmax && y >= ymin && x - 1 >= xmin && arr_row_col[y][x - 1] != 1) {
+                    count_stack++;
+                    stack_x[count_stack] = x - 1;
+                    stack_y[count_stack] = y;
+
+                    gl.Vertex(x - 1, gl.RenderContextProvider.Height - (y));
+                    arr_row_col[y][x - 1] = 1;
+                }
+                //(x, y + 1)
+                if (y + 1 <= ymax && x <= xmax && y + 1 >= ymin && x >= xmin && arr_row_col[y + 1][x] != 1) {
+                    count_stack++;
+                    stack_x[count_stack] = x;
+                    stack_y[count_stack] = y + 1;
+
+                    gl.Vertex(x, gl.RenderContextProvider.Height - (y + 1));
+                    arr_row_col[y + 1][x] = 1;
+                }
+                //(x, y - 1)
+                if (y - 1 <= ymax && x <= xmax && y - 1 >= ymin && x >= xmin && arr_row_col[y - 1][x] != 1) {
+                    count_stack++;
+                    stack_x[count_stack] = x;
+                    stack_y[count_stack] = y - 1;
+
+                    gl.Vertex(x, gl.RenderContextProvider.Height - (y - 1));
+                    arr_row_col[y - 1][x] = 1;
+                }
+
+
+                //stop loop
+                if (now_pos == count_stack)
+                    break;
+
+                //update stack
+                now_pos++;
+                run++;
+            }
+        }
+
+        public void Draw(int count, int x, int y) {
+            //init
+            run = 0;
+            count_stack = 1;
+            stack_x = new int[(ymax - ymin) * (xmax - xmin)];
+            stack_y = new int[(ymax - ymin) * (xmax - xmin)];
+
+            //get pixel of center point of control points of shape
+            int centerx = x, centery = y;
+
+            //array points of edge
+            Point[] ps = new Point[vertexArr.Count + 1];
+            vertexArr.CopyTo(ps);
+            ps[vertexArr.Count] = ps[0];           //cot truoc dong sau
+
+            //init array
+            arr_row_col = new byte[ymax + 1][];   //dong truoc cot sau
+            for (int i = 0; i < ymax + 1; i++)
+                arr_row_col[i] = new byte[xmax + 1];
+
+            //fill point -> array
+            for (int i = 0; i < vertexArr.Count; i++) {
+                //(ps[i].X, ps[i].Y)
+                arr_row_col[ps[i].Y][ps[i].X] = 1;
+            }
+
+            //draw
+            gl.Color(color);
+            gl.Begin(OpenGL.GL_POINTS);
+
+            //put a pixel
+            floodfill(centerx, centery, count);
+            //end put
+            gl.End();
+            gl.Flush();
+        }
+    }
+
 }
