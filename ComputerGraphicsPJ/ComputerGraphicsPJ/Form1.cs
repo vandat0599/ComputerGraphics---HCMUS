@@ -220,6 +220,8 @@ namespace ComputerGraphicsPJ {
                             } else {
                                 currentShape.DrawControlPoint(false, false);
                                 isShowingControlPoints = false;
+                                //updateShape();
+                                System.Console.WriteLine("abcxyz");
                             }
                         }
                         break;
@@ -322,14 +324,7 @@ namespace ComputerGraphicsPJ {
                 case MOUSE_MODE.DRAG: {
                         onPressMove = false;
                         if (isShowingControlPoints) {
-                            currentShape.setStartPoint(
-                                new Point(
-                                    currentShape.getStartPoint().X + (endMovePoint.X - startMovePoint.X),
-                                    currentShape.getStartPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
-                            currentShape.setEndPoint(
-                               new Point(
-                                   currentShape.getEndPoint().X + (endMovePoint.X - startMovePoint.X),
-                                   currentShape.getEndPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+                            updateShape();
                         }
                         break;
                     }
@@ -636,6 +631,19 @@ namespace ComputerGraphicsPJ {
 
         private void setAllSizeCursor() {
             openGLControl.Cursor = Cursors.SizeAll;
+        }
+
+        private void updateShape() {
+            currentShape.setStartPoint(
+                                new Point(
+                                    currentShape.getStartPoint().X + (endMovePoint.X - startMovePoint.X),
+                                    currentShape.getStartPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+            currentShape.setEndPoint(
+               new Point(
+                   currentShape.getEndPoint().X + (endMovePoint.X - startMovePoint.X),
+                   currentShape.getEndPoint().Y + (endMovePoint.Y - startMovePoint.Y)));
+            startMovePoint = new Point(0, 0);
+            endMovePoint = new Point(0, 0);
         }
 
     }
